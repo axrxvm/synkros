@@ -1,7 +1,7 @@
 {
   "name": "synkros",
-  "version": "1.0.0",
-  "description": "NodeJs File Sharing App",
+  "version": "1.2.0",
+  "description": "File Sharing with ease, No bullshit.",
   "main": "server.js",
   "scripts": {
     "start": "node server.js",
@@ -11,7 +11,7 @@
     "name": "Aarav Mehta",
     "url": "https://itzaarav.netlify.app"
   },
-  "license": "ISC",
+  "license": "MIT",
   "dependencies": {
     "cors": "^2.8.5",
     "dotenv": "^16.4.5",

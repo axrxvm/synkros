@@ -2,6 +2,7 @@ const timeAgo = require("timeago.js");
 const router = require("express").Router();
 const File = require("../models/file");
 
+
 function formatBytes(bytes, decimals) {
   if (bytes == 0) return "0 Bytes";
   var k = 1024,
@@ -14,8 +15,8 @@ function formatBytes(bytes, decimals) {
 const random = new Date().getTime().toString(20);
 const salt = Buffer.from(random).toString("base64");
 const cleanUpLink = `https://synkross.alwaysdata.net/cleanup?ts=${random}${salt}`;
-const code = `12234`;
-
+// get the code from .env file
+const code = process.env.CLEANUP_CODE;
 router.get("/", async (req, res) => {
   const files = await File.find();
   const allFiles = files.map(({ _doc: file }) => file);
