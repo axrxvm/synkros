@@ -2,6 +2,8 @@
 **Share your files with ease. No bullshit.**  
 🌐 [https://synkross.alwaysdata.net](https://synkross.alwaysdata.net)
 
+  [![Better Stack Badge](https://uptime.betterstack.com/status-badges/v1/monitor/1wh9v.svg)](https://synkross.alwaysdata.net/)
+
 ---
 
 ## 🧭 Overview
