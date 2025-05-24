@@ -208,6 +208,23 @@ strong {
   transform: translate3d(-50%, -50%, 0);
 }
 
+.upload-stats {
+  text-align: center;
+  margin-top: 15px;
+  font-size: 14px;
+  color: var(--text-color-muted);
+}
+
+#uploadSpeed {
+  margin-right: 10px; 
+}
+
+#uploadSpeed,
+#uploadETA {
+  display: inline-block; /* Ensures they sit side-by-side and respect margin/padding */
+  padding: 2px 5px;
+}
+
 .postupload-ui {
   height: 100%;
   width: 100%;
