@@ -23,6 +23,11 @@ const toast = document.querySelector(".toast");
 
 const cleanupBtn = document.querySelector("#cleanup-btn");
 
+let uploadStartTime; // To store the time when upload starts
+const uploadSpeedEl = document.getElementById("uploadSpeed"); // Assuming ID for speed element
+const uploadETAEl = document.getElementById("uploadETA"); // Assuming ID for ETA element
+
+
 const maxAllowedFileSize = 500 * 1024 * 1024;
 const maxAllowedFileSizeInWords = "500MB";
 
@@ -74,6 +79,10 @@ const uploadFile = () => {
   progressView.style.display = "block";
   postUploadView.style.display = "none";
 
+  // Reset speed and ETA text
+  if (uploadSpeedEl) uploadSpeedEl.innerText = "";
+  if (uploadETAEl) uploadETAEl.innerText = "";
+
   const file = fileInput.files[0];
   const formData = new FormData();
   formData.append("myFile", file);
@@ -83,6 +92,26 @@ const uploadFile = () => {
   xhr.upload.onprogress = function (event) {
     let percent = Math.round((100 * event.loaded) / event.total);
     progressBar.style.width = `${percent}%`;
+
+    if (event.lengthComputable && uploadStartTime) {
+      const currentTime = Date.now();
+      const elapsedTimeInSeconds = (currentTime - uploadStartTime) / 1000;
+
+      if (elapsedTimeInSeconds > 0) {
+        const bytesLoaded = event.loaded;
+        const totalBytes = event.total;
+        const uploadSpeed = bytesLoaded / elapsedTimeInSeconds; // Bytes per second
+        const remainingBytes = totalBytes - bytesLoaded;
+        const etaInSeconds = remainingBytes / uploadSpeed;
+
+        if (uploadSpeedEl) {
+          uploadSpeedEl.innerText = formatSpeed(uploadSpeed);
+        }
+        if (uploadETAEl) {
+          uploadETAEl.innerText = formatETA(etaInSeconds);
+        }
+      }
+    }
   };
 
   xhr.upload.onerror = function () {
@@ -97,8 +126,35 @@ const uploadFile = () => {
   };
 
   xhr.open("POST", "/api/files");
+  uploadStartTime = Date.now(); // Record start time before sending
   xhr.send(formData);
 };
+
+const formatSpeed = (bytesPerSecond) => {
+  if (bytesPerSecond < 1024) {
+    return `${bytesPerSecond.toFixed(2)} B/s`;
+  } else if (bytesPerSecond < 1024 * 1024) {
+    return `${(bytesPerSecond / 1024).toFixed(2)} KB/s`;
+  } else {
+    return `${(bytesPerSecond / (1024 * 1024)).toFixed(2)} MB/s`;
+  }
+};
+
+const formatETA = (totalSeconds) => {
+  if (isNaN(totalSeconds) || !isFinite(totalSeconds) || totalSeconds < 0) {
+    return "Calculating...";
+  }
+  const minutes = Math.floor(totalSeconds / 60);
+  const seconds = Math.floor(totalSeconds % 60);
+  if (minutes > 0) {
+    return `${minutes} min ${seconds} sec remaining`;
+  } else if (seconds > 0) {
+    return `${seconds} sec remaining`;
+  } else {
+    return "Almost done...";
+  }
+};
+
 
 const onFileUploadSuccess = (res) => {
   fileInput.value = "";
