@@ -4,6 +4,8 @@ const { v4: uuid4 } = require("uuid");
 const path = require("path");
 const qr = require("qrcode");
 const File = require("../models/file");
+const crypto = require("crypto");
+const fs = require("fs");
 const constants = require("../constants/file-constants");
 
 let storage = multer.diskStorage({
@@ -36,11 +38,60 @@ router.post("/", (req, res) => {
         error: err.message,
       });
     }
+
+    // Encryption logic starts here
+    try {
+      const encryptionKey = process.env.KEY;
+      if (!encryptionKey || Buffer.from(encryptionKey).length !== 32) {
+        console.error("Server encryption key not configured correctly.");
+        // Attempt to delete the uploaded file if key is invalid
+        if (req.file && req.file.path) {
+          try {
+            fs.unlinkSync(req.file.path);
+          } catch (unlinkErr) {
+            console.error("Error deleting file after key validation failure:", unlinkErr);
+          }
+        }
+        return res.status(500).json({
+          error: "Server encryption key not configured correctly. Please contact the administrator.",
+        });
+      }
+
+      const iv = crypto.randomBytes(16);
+      const cipher = crypto.createCipheriv('aes-256-cbc', Buffer.from(encryptionKey), iv);
+      
+      const filePath = req.file.path;
+      const fileBuffer = fs.readFileSync(filePath);
+      
+      const encryptedData = Buffer.concat([cipher.update(fileBuffer), cipher.final()]);
+      const dataToStore = Buffer.concat([iv, encryptedData]);
+      
+      fs.writeFileSync(filePath, dataToStore);
+      
+      // Update file size to reflect the size of the encrypted file (IV + encrypted content)
+      req.file.size = dataToStore.length;
+
+    } catch (encryptionError) {
+      console.error("Encryption error:", encryptionError);
+      // Attempt to delete the uploaded file if encryption fails
+      if (req.file && req.file.path) {
+        try {
+          fs.unlinkSync(req.file.path);
+        } catch (unlinkErr) {
+          console.error("Error deleting file after encryption failure:", unlinkErr);
+        }
+      }
+      return res.status(500).json({
+        error: "Failed to encrypt the file.",
+      });
+    }
+    // Encryption logic ends here
+
     const file = new File({
       filename: req.file.filename,
       uuid: uuid4(),
       path: req.file.path,
-      size: req.file.size,
+      size: req.file.size, // This will now be the encrypted file size
     });
 
     const response = await file.save();
