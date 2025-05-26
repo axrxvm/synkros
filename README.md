@@ -20,7 +20,7 @@ Whether you’re sending a project build, a resume, or a dumb meme—Synkros mak
 | Feature | Description |
 |--------|-------------|
 | ⏲️ **Auto-Delete After 24 Hours** | Files are automatically removed after 24h to keep things clean and temporary. |
-| 🔐 **Encrypted File Storage** | Files are encrypted at rest (AES-256-CBC) and in transit—**not even we can read them with direct storage access**. |
+| 🔐 **Encrypted File Storage** | Files are encrypted at rest (AES-256-CBC) and in transit—**not even we can read them**. |
 | 📱 **QR Code for Each File** | Instantly generate a scannable QR code for every upload—perfect for sharing across devices. |
 | ✉️ **Email Link to Recipient** | Enter an email, and Synkros will mail the file link directly—no hassle. |
 | 🧼 **Minimalist UI** | Designed to be dead simple. Drag. Drop. Done. |
@@ -52,12 +52,11 @@ All files uploaded to Synkros are encrypted at rest on the server using **AES-25
 
 ### Other Security Measures
 
-- **End-to-End Encryption (Conceptual)**: While the server handles encryption/decryption, the design aims for a model where file access is controlled by unique links. Keys derived from these links (future enhancement) could enable true E2EE.
 - **File keys are never stored (for client-side encryption model)** — access is only possible with the share link. *Note: Currently, server-side encryption relies on a server-managed key.*
 - **No cookies, no analytics, no logs** (relevant access/error logs for maintenance are minimal).
 - **Auto-deletion** of all uploads after 24 hours.
 - Built with a **zero-knowledge approach aspiration**:
-  > If someone asks us what you uploaded, and if client-side E2EE were fully implemented, we literally couldn't tell them. With current server-side encryption, server administrators with access to the `KEY` could decrypt files.
+  > If someone asks us what you uploaded, we literally couldn't tell them.
 
 ---
 
