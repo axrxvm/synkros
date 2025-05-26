@@ -112,30 +112,6 @@ For self-hosting or development, this application requires certain environment v
 
 ---
 
-## 🧪 Development & Testing
-
-The application includes an end-to-end test script (`test-encryption.js`) to verify the file encryption and decryption functionality.
-
-To run this test:
-
-1.  **Install development dependencies**:
-    If you haven't already, or if they are not listed in `package.json`'s `devDependencies`:
-    ```bash
-    npm install --save-dev axios form-data
-    ```
-2.  **Ensure Server is Running**: The application server must be running.
-3.  **Set Environment Key**: The `KEY` environment variable must be set in the *same terminal session* where you run the test script, or the server must have it configured.
-    ```bash
-    export KEY=YourSecretKeyForTesting123456789 # Example, use your actual test key
-    ```
-4.  **Execute the test script**:
-    ```bash
-    node test-encryption.js
-    ```
-    The script will create a sample file, upload it, download it, and verify that the original and downloaded contents match.
-
----
-
 ## 🌍 Live Demo
 
 Try it now — no login, no install:  

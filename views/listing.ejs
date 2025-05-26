@@ -89,12 +89,12 @@
     </section>
     <script>
       function askCode() {
-        let code = prompt("Please enter High Security Code:");
+        let code = prompt("Please enter Access Code:");
         if (code == null || code == "") {
-          alert("Please enter code");
+          alert("Please enter Access Code:");
         } else {
           if (code != "<%=locals.code%>") {
-            alert("Incorrect Code!");
+            alert("Incorrect Code! Access Denied.");
           } else {
             const alertBox = document.querySelector("#restriction");
             const contentBox = document.querySelector("#content");
