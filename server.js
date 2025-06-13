@@ -35,7 +35,7 @@ const server = app.listen(PORT, () => {
 cron.schedule("0 0 * * *", () => {
   console.log("Running cleanup cron job");
   const options = {
-    hostname: "localhost",
+    hostname: "https://synkross.alwaysdata.net/",
     port: PORT,
     path: "/cleanup",
     method: "GET",
