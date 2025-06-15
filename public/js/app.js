@@ -121,7 +121,28 @@ const uploadFile = () => {
 
   xhr.onreadystatechange = function () {
     if (xhr.readyState == XMLHttpRequest.DONE) {
-      onFileUploadSuccess(xhr.responseText);
+      if (xhr.status === 200) {
+        onFileUploadSuccess(xhr.responseText);
+      } else {
+        let errorMessage = `Error processing file: ${xhr.status} ${xhr.statusText}`;
+        try {
+          const errorResponse = JSON.parse(xhr.responseText);
+          if (errorResponse && errorResponse.error) {
+            errorMessage = errorResponse.error;
+          }
+        } catch (e) {
+          // Response was not JSON or no 'error' property, use default message
+          console.error("Could not parse error response as JSON:", e);
+        }
+        showToast(errorMessage);
+        // Reset UI
+        uploadView.style.display = "block";
+        progressView.style.display = "none";
+        postUploadView.style.display = "none";
+        if (fileInput) {
+          fileInput.value = ""; // Clear the file input
+        }
+      }
     }
   };
 
