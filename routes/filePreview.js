@@ -5,7 +5,6 @@ router.get("/:fileId", async (req, res) => {
   try {
     const file = await getFileMetadata(req.params.fileId);
     if (!file) {
-    if (!file) {
       return res.render("download", {
         error: "Incorrect file link",
       });
