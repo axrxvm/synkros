@@ -1,13 +1,11 @@
 const router = require('express').Router();
-const File = require('../models/file');
+const { getFileMetadata } = require('../models/file');
 const crypto = require('crypto');
 const fs = require('fs');
 
 router.get('/:uuid', async (req, res) => {
   try {
-    const file = await File.findOne({
-      uuid: req.params.uuid
-    });
+    const file = await getFileMetadata(req.params.uuid);
 
     if (!file) {
       return res.render('download', {
