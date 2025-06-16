@@ -13,7 +13,7 @@ module.exports = async ({ from, to, subject, text, html }) => {
 
   // send mail with defined transport object
   let info = await transporter.sendMail({
-    from: `Synkros - <${from}>`,
+    from: ``,
     to: to,
     subject: subject,
     text: text,

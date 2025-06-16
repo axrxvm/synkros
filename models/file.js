@@ -1,6 +1,6 @@
 const fs = require('fs').promises;
 const path = require('path');
-const { randomUUID } = require('crypto'); // For generating UUIDs if not provided
+const { randomUUID } = require('crypto');
 
 const DATA_DIR = path.join(__dirname, '..', 'data');
 
@@ -26,14 +26,14 @@ async function ensureDataDir() {
 async function saveFileMetadata(metadata) {
   await ensureDataDir();
   if (!metadata.uuid) {
-    metadata.uuid = randomUUID(); // Generate UUID if not present
+    metadata.uuid = randomUUID();
   }
   metadata.createdAt = new Date().toISOString();
-  metadata.updatedAt = new Date().toISOString(); // Set updatedAt on initial save as well
+  metadata.updatedAt = new Date().toISOString();
 
   const filePath = path.join(DATA_DIR, `${metadata.uuid}.json`);
   try {
-    await fs.writeFile(filePath, JSON.stringify(metadata, null, 2));
+    await fs.writeFile(filePath, JSON.stringify(metadata)); // Minified JSON
     return metadata;
   } catch (error) {
     console.error(`Error saving metadata for ${metadata.uuid}:`, error);
@@ -47,17 +47,17 @@ async function saveFileMetadata(metadata) {
  * @returns {object|null} The metadata object or null if not found.
  */
 async function getFileMetadata(uuid) {
-  await ensureDataDir(); // Should not be strictly necessary for read, but good for consistency
+  await ensureDataDir();
   const filePath = path.join(DATA_DIR, `${uuid}.json`);
   try {
     const data = await fs.readFile(filePath, 'utf8');
     return JSON.parse(data);
   } catch (error) {
     if (error.code === 'ENOENT') {
-      return null; // File not found
+      return null;
     }
     console.error(`Error reading metadata for ${uuid}:`, error);
-    throw error; // Other errors (e.g., permission issues, parse errors)
+    throw error;
   }
 }
 
@@ -73,14 +73,13 @@ async function updateFileMetadata(uuid, updates) {
   try {
     let metadata = await getFileMetadata(uuid);
     if (!metadata) {
-      return null; // File not found
+      return null;
     }
 
-    // Merge updates
     metadata = { ...metadata, ...updates };
-    metadata.updatedAt = new Date().toISOString(); // Update the timestamp
+    metadata.updatedAt = new Date().toISOString();
 
-    await fs.writeFile(filePath, JSON.stringify(metadata, null, 2));
+    await fs.writeFile(filePath, JSON.stringify(metadata)); // Minified JSON
     return metadata;
   } catch (error) {
     console.error(`Error updating metadata for ${uuid}:`, error);
@@ -101,7 +100,7 @@ async function deleteFileMetadata(uuid) {
     return true;
   } catch (error) {
     if (error.code === 'ENOENT') {
-      return false; // File not found
+      return false;
     }
     console.error(`Error deleting metadata for ${uuid}:`, error);
     throw error;
@@ -122,17 +121,14 @@ async function getAllFileMetadata() {
     for (const jsonFile of jsonFiles) {
       const uuid = path.basename(jsonFile, '.json');
       const metadata = await getFileMetadata(uuid);
-      if (metadata) { // Ensure metadata is not null (e.g. if a file was deleted concurrently)
+      if (metadata) {
         allMetadata.push(metadata);
       }
     }
     return allMetadata;
   } catch (error) {
     if (error.code === 'ENOENT') {
-      // This can happen if DATA_DIR itself doesn't exist yet,
-      // though ensureDataDir should prevent this.
-      // Or if it was deleted after ensureDataDir check.
-      return []; // No directory, so no files
+      return [];
     }
     console.error("Error reading all metadata files:", error);
     throw error;

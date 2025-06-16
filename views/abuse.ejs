@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Report Abuse — Synkros</title>
+    <meta name="description" content="Report abuse on Synkros. If a file is illegal or dangerous, tell us here." />
+    <link rel="stylesheet" href="/css/style.css" />
+    <style>
+      main {
+        padding: 80px 20px 40px;
+        max-width: 600px;
+        margin: auto;
+      }
+
+      main h1 {
+        color: var(--app-color);
+        margin-bottom: 0.75rem;
+        font-size: 1.75rem;
+      }
+
+      main p {
+        color: var(--text-color-muted);
+        margin-bottom: 2rem;
+      }
+
+      form {
+        display: flex;
+        flex-direction: column;
+        gap: 1.5rem;
+      }
+
+      .form-group {
+        display: flex;
+        flex-direction: column;
+      }
+
+      label {
+        color: var(--text-color);
+        font-weight: 500;
+        margin-bottom: 0.5rem;
+      }
+
+      input[type="url"],
+      textarea {
+        padding: 12px;
+        border-radius: 6px;
+        border: 1px solid var(--light-border-color);
+        background-color: transparent;
+        color: #fff;
+        font-size: 1rem;
+        transition: border-color 0.2s ease;
+      }
+
+      input::placeholder,
+      textarea::placeholder {
+        color: var(--text-color-muted);
+        font-size: 0.95rem;
+      }
+
+      input:focus,
+      textarea:focus {
+        outline: none;
+        border-color: var(--app-color);
+      }
+
+      textarea {
+        resize: vertical;
+        min-height: 100px;
+        line-height: 1.4;
+      }
+
+      button {
+        padding: 14px;
+        background-color: var(--app-color);
+        border: none;
+        border-radius: 6px;
+        color: #fff;
+        font-weight: 600;
+        font-size: 1rem;
+        cursor: pointer;
+        transition: background-color 0.2s ease;
+      }
+
+      button:hover {
+        background-color: var(--app-color-hover);
+      }
+    </style>
+  </head>
+
+  <body>
+    <nav class="navbar">
+      <div class="navbar-container">
+        <a href="/" class="navbar-logo">Synkros</a>
+        <div class="navbar-links">
+          <a href="/" class="nav-link">Upload</a>
+          <a href="/privacy" class="nav-link">Privacy</a>
+        </div>
+      </div>
+    </nav>
+
+    <main>
+      <h1>🚩 Report Abuse</h1>
+      <p>If a file shared via Synkros is illegal, harmful, or violates laws, use this form to report it. No fluff.</p>
+
+      <form method="POST" action="https://formcarry.com/s/6YGdMNnba3A" enctype="multipart/form-data">
+        <div class="form-group">
+          <label for="fileUrl">File Link</label>
+          <input
+            type="url"
+            id="fileUrl"
+            name="fileUrl"
+            placeholder="https://synkross.alwaysdata.net/download/{uuid}"
+            required
+          />
+        </div>
+
+        <div class="form-group">
+          <label for="reason">What's wrong?</label>
+          <textarea
+            id="reason"
+            name="reason"
+            placeholder="Explain the issue briefly. Don’t include personal info."
+            required
+          ></textarea>
+        </div>
+
+        <button type="submit">Submit Report</button>
+      </form>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-container">
+        <a href="/tos" class="footer-link">Terms of Service</a> |
+        <a href="/privacy" class="footer-link">Privacy Policy</a> |
+        <a href="/license" class="footer-link">License</a> |
+        <a href="https://github.com/axrxvm/synkros" class="footer-link">GitHub</a>
+      </div>
+    </footer>
+  </body>
+</html>

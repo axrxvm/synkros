@@ -24,6 +24,11 @@ app.use("/cleanup", require("./routes/cleanup"));
 app.use("/api/files", require("./routes/files"));
 app.use("/files", require("./routes/filePreview"));
 app.use("/files/download", require("./routes/download"));
+app.get('/privacy', (req, res) => { res.render('privacy'); });
+app.get('/tos', (req, res) => { res.render('tos'); });
+app.get("/report", (req, res) => { res.render("abuse"); });
+app.get("/license", (req, res) => { res.render("license"); });
+
 
 const server = app.listen(PORT, () => {
   console.log(`Listening to port ${PORT}`);
