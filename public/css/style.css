@@ -11,6 +11,7 @@
   --light-border-color: #ccc;
   --light-border-color-hover: #bbb;
   --btn-bg-color: #ccc;
+  --navbar-shadow: 0 1px 5px rgba(0, 0, 0, 0.1); 
 }
 
 @media (prefers-color-scheme: dark) {
@@ -57,17 +58,75 @@ html {
   overflow-x: hidden;
 }
 
+html, body {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+body > main {
+  flex: 1;
+}
+
+
 strong {
   color: var(--text-color);
 }
 
+/* Navigation Bar Styles */
+.navbar {
+  background-color: var(--navbar-bg);
+  box-shadow: var(--navbar-shadow);
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 1000;
+  height: 60px;
+}
+
+.navbar-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 20px;
+  height: 100%;
+}
+
+.navbar-logo {
+  font-size: 24px;
+  font-weight: 700;
+  color: var(--app-color);
+  text-decoration: none;
+}
+
+.navbar-links {
+  display: flex;
+  gap: 20px;
+}
+
+.nav-link {
+  color: var(--text-color);
+  text-decoration: none;
+  font-size: 16px;
+  font-weight: 500;
+  transition: color 0.2s ease-in-out;
+}
+
+.nav-link:hover {
+  color: var(--app-color);
+}
+
 .upload-container {
   display: flex;
-  flex-direction: column;
   align-items: center;
   justify-content: center;
-  height: 100%;
+  flex: 1;
+  height: calc(100vh - 100px); /* assuming 60px nav + 40px footer */
   width: 100%;
+  padding-bottom: 0; /* already accounted in height above */
 }
 
 .upload-container > small {
@@ -87,23 +146,20 @@ strong {
 }
 
 .dropzone {
-  height: 100%;
-  /* max-width: 600px; */
   width: 100%;
-  /* border-radius: 18px; */
   background: var(--bg-color);
   user-select: none;
 }
 
 .dropzone .wrapper {
-  padding: 2rem;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  height: 100%;
   color: var(--text-color);
+  text-align: center;
 }
+
 
 .dropzone .files-icon {
   position: relative;
@@ -231,7 +287,7 @@ strong {
   align-items: center;
   justify-content: center;
   display: none;
-  min-height: 720px;
+  min-height: calc(100vh - 100px); /* Adjusted for navbar and footer */
 }
 
 .postupload-ui .wrapper {
@@ -630,6 +686,8 @@ strong {
 }
 
 .download-container {
+  padding-bottom: 40px; /* Adjusted for footer */
+  padding-top: 60px;
   height: 100vh;
   width: 100vw;
 }
@@ -719,7 +777,7 @@ strong {
 
 .files-container {
   overflow: auto;
-  height: 100vh;
+  height: calc(100vh - 100px); /* Adjusted for navbar and footer */
   width: 100vw;
 }
 
@@ -768,7 +826,7 @@ strong {
 .block-message {
   display: flex;
   flex-direction: column;
-  height: 100vh;
+  height: calc(100vh - 100px); /* Adjusted for navbar and footer */
   width: 100vw;
   align-items: center;
   justify-content: center;
@@ -806,4 +864,36 @@ strong {
 
 .block-message button:hover {
   background-color: var(--app-color-hover);
+}
+
+/* Footer Styles */
+.footer {
+  background-color: transparent;
+  box-shadow: var(--navbar-shadow); /* optional: matches navbar shadow */
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-top: 1px solid var(--light-border-color);
+}
+
+.footer-container {
+  max-width: 1200px;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  font-size: 14px;
+  color: var(--text-color-muted);
+}
+
+.footer-link {
+  color: var(--text-color-muted);
+  text-decoration: none;
+  transition: color 0.2s ease-in-out;
+}
+
+.footer-link:hover {
+  color: var(--app-color);
 }

@@ -32,6 +32,16 @@
   </head>
 
   <body>
+    <nav class="navbar">
+    <div class="navbar-container">
+      <a href="/" class="navbar-logo">Synkros</a>
+      <div class="navbar-links">
+        <a href="/" class="nav-link">Upload</a>
+        <a href="/privacy" class="nav-link">Privacy</a>
+      </div>
+    </div>
+  </nav>
+  <main>
     <section class="upload-container">
       <div class="dropzone">
         <div class="wrapper">
@@ -47,12 +57,6 @@
           </div>
         </div>
       </div>
-      <small>
-        <span>Synkros</span> by
-        <a href="https://aarav.is-a.dev" target="_blank"
-          >Aarav Mehta</a
-        ></small
-      >
     </section>
     <section class="uploader-progress-ui">
       <div class="progress-bar">
@@ -150,6 +154,16 @@
       </div>
     </section>
     <div class="toast"></div>
+  </main>
+    <footer class="footer">
+      <div class="footer-container">
+        <a href="/tos" class="footer-link">Terms of Service</a> |
+        <a href="/privacy" class="footer-link">Privacy Policy</a> |
+        <a href="/license" class="footer-link">License</a> |
+        <a href="https://github.com/axrxvm/synkros" class="footer-link">GitHub</a> |
+        <a href="/report" class="footer-link">Report Abuse</a>
+      </div>
+    </footer>
     <script>
       function gotoHome() {
         window.location.href = "/";

@@ -1,11 +1,9 @@
 const router = require("express").Router();
-const File = require("../models/file");
+const { getFileMetadata } = require("../models/file");
 
 router.get("/:fileId", async (req, res) => {
   try {
-    const file = await File.findOne({
-      uuid: req.params.fileId,
-    });
+    const file = await getFileMetadata(req.params.fileId);
     if (!file) {
       return res.render("download", {
         error: "Incorrect file link",

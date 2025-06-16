@@ -3,7 +3,8 @@ const multer = require("multer");
 const { v4: uuid4 } = require("uuid");
 const path = require("path");
 const qr = require("qrcode");
-const File = require("../models/file");
+// const File = require("../models/file");
+const { saveFileMetadata, getFileMetadata, updateFileMetadata } = require("../models/file");
 const crypto = require("crypto");
 const fs = require("fs");
 const constants = require("../constants/file-constants");
@@ -87,15 +88,22 @@ router.post("/", (req, res) => {
     }
     // Encryption logic ends here
 
-    const file = new File({
+    const metadata = {
       filename: req.file.filename,
-      uuid: uuid4(),
+      uuid: uuid4(), // Keep existing uuid generation for consistency here
       path: req.file.path,
-      size: req.file.size, // This will now be the encrypted file size
-    });
+      size: req.file.size, // This is the encrypted file size
+    };
 
-    const response = await file.save();
-    const fileUrl = `https://synkross.alwaysdata.net/files/${response.uuid}`;
+    const savedFile = await saveFileMetadata(metadata);
+
+    if (!savedFile) {
+      return res.status(500).json({
+        error: "Failed to save file metadata."
+      });
+    }
+
+    const fileUrl = `https://synkross.alwaysdata.net/files/${savedFile.uuid}`;
     qr.toDataURL(fileUrl, (err, src) => {
       return res.status(200).json({
         file: fileUrl,
@@ -115,13 +123,20 @@ router.post("/sendmail", async (req, res) => {
   }
 
   try {
-    const file = await File.findOne({
-      uuid: uuid,
-    });
+    const file = await getFileMetadata(uuid);
+
+    if (!file) {
+      return res.status(404).send({ error: "File not found." });
+    }
+
+    // Ensure recipients is an array, even if it's not present in the JSON
+    if (!file.recipients) {
+      file.recipients = [];
+    }
 
     if (!file.sender) {
       file.sender = sender;
-      file.recipients = [recipient];
+      file.recipients = [recipient]; // Initialize recipients as a new array
     } else {
       if (file.recipients.includes(recipient)) {
         return res.status(422).send({
@@ -132,7 +147,15 @@ router.post("/sendmail", async (req, res) => {
       }
     }
 
-    await file.save();
+    const updatedFile = await updateFileMetadata(uuid, { sender: file.sender, recipients: file.recipients });
+
+    if (!updatedFile) {
+        // This could happen if the file was deleted between getFileMetadata and updateFileMetadata
+        return res.status(500).json({
+            error: "Failed to update file metadata. File might have been deleted."
+        });
+    }
+
     const sendMail = require("../services/emailService");
     sendMail({
       from: sender,
