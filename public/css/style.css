@@ -1,31 +1,22 @@
 :root {
-  --bg-color: #eee;
-  --card-color: #fff;
+  --bg-color: #202124;
+  --navbar-bg: var(--bg-color);
+  --card-color: #24262b;
   --app-color: #4c8bf4;
   --app-color-hover: #407be2;
   --app-color-rgb: 76, 139, 244;
-  --progressbar-bg-color: rgba(0, 0, 0, 0.075);
-  --text-color: #444;
-  --text-color-muted: rgba(68, 68, 68, 0.7);
-  --button-filter: none;
-  --light-border-color: #ccc;
-  --light-border-color-hover: #bbb;
-  --btn-bg-color: #ccc;
-  --navbar-shadow: 0 1px 5px rgba(0, 0, 0, 0.1); 
+  --progressbar-bg-color: #262626;
+  --text-color: #aaa;
+  --text-color-muted: #888;
+  --button-filter: invert(1) hue-rotate(180deg);
+  --light-border-color: #333;
+  --light-border-color-hover: #444;
+  --btn-bg-color: #2e2e2e;
+  --navbar-shadow: 0 1px 5px rgba(0, 0, 0, 0.1);
 }
-
-@media (prefers-color-scheme: dark) {
-  body {
-    --bg-color: #202124;
-    --card-color: #24262b;
-    --app-color-rgb: 76, 139, 244;
-    --progressbar-bg-color: #262626;
-    --text-color: #aaa;
-    --text-color-muted: #888;
-    --button-filter: invert(1) hue-rotate(180deg);
-    --light-border-color: #333;
-    --light-border-color-hover: #444;
-    --btn-bg-color: #2e2e2e;
+@media screen and (max-width: 480px) {
+  .footer-container .footer-link + .footer-link::before {
+    content: "";
   }
 }
 
@@ -881,12 +872,17 @@ strong {
   max-width: 1200px;
   width: 100%;
   display: flex;
+  flex-wrap: wrap;
   align-items: center;
   justify-content: center;
-  gap: 10px;
+  gap: 8px 16px;
+  padding: 10px;
   font-size: 14px;
   color: var(--text-color-muted);
+  text-align: center;
 }
+
+
 
 .footer-link {
   color: var(--text-color-muted);

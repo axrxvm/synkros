@@ -123,4 +123,8 @@ dist
 uploads/*
 !uploads/.gitkeep
 
+# Data files
+data/*
+!data/.gitkeep
+
 .DS_Store
