@@ -18,7 +18,7 @@ const cleanUpLink = `https://synkross.alwaysdata.net/cleanup?ts=${random}${salt}
 // get the code from .env file
 const code = process.env.CLEANUP_CODE;
 router.get("/", async (req, res) => {
-  const files = await File.find();
+  const files = await File.getAllFileMetadata();
   const allFiles = files.map(({ _doc: file }) => file);
 
   const formattedFiles = allFiles

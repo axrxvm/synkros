@@ -223,6 +223,12 @@ strong {
   border-radius: 60px;
   overflow: hidden;
   width: calc(100% - 40px);
+  left: 50%;
+  max-width: 600px;
+  position: absolute;
+  top: 50%;
+  -webkit-transform: translate3d(-50%, -50%, 0);
+  transform: translate3d(-50%, -50%, 0);
 }
 
 .progress-bar span {
@@ -246,20 +252,18 @@ strong {
   border-radius: 60px;
 }
 
-.progress-bar {
-  left: 50%;
-  max-width: 600px;
-  position: absolute;
-  top: 50%;
-  -webkit-transform: translate3d(-50%, -50%, 0);
-  transform: translate3d(-50%, -50%, 0);
-}
+/* The second .progress-bar rule block has been removed and consolidated into the one above */
 
 .upload-stats {
   text-align: center;
-  margin-top: 15px;
   font-size: 14px;
   color: var(--text-color-muted);
+  position: absolute;
+  left: 50%;
+  top: calc(50% + 40px); /* Estimate to position below progress bar */
+  transform: translateX(-50%);
+  width: calc(100% - 40px); /* Match progress bar's width behavior */
+  max-width: 600px; /* Match progress bar's max-width */
 }
 
 #uploadSpeed {
@@ -892,4 +896,35 @@ strong {
 
 .footer-link:hover {
   color: var(--app-color);
+}
+
+
+/* Custom Scrollbar Styling */
+/* For Webkit-based browsers (Chrome, Safari, Edge) */
+::-webkit-scrollbar {
+  width: 10px; /* Width of the entire scrollbar */
+  height: 10px; /* Height of the scrollbar (for horizontal scrollbars) */
+}
+
+::-webkit-scrollbar-track {
+  background: var(--card-color); /* Color of the tracking area */
+  border-radius: 10px; /* Optional: roundness of the track */
+}
+
+::-webkit-scrollbar-thumb {
+  background-color: var(--text-color-muted); /* Color of the scroll thumb */
+  border-radius: 10px; /* Roundness of the scroll thumb */
+  border: 2px solid var(--card-color); /* Creates padding around thumb, use track color for seamless look */
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background-color: var(--app-color); /* Color of the scroll thumb on hover */
+}
+
+/* For Firefox (limited customization) */
+/* This provides a basic color scheme for Firefox, which doesn't support detailed ::-webkit-scrollbar styling */
+/* Apply to html or body, or a specific scrollable container if needed */
+html {
+  scrollbar-width: thin; /* "auto" or "thin" */
+  scrollbar-color: var(--text-color-muted) var(--card-color); /* thumb color track color */
 }
