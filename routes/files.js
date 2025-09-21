@@ -3,14 +3,25 @@ const multer = require("multer");
 const { v4: uuid4 } = require("uuid");
 const path = require("path");
 const qr = require("qrcode");
-// const File = require("../models/file");
 const { saveFileMetadata, getFileMetadata, updateFileMetadata } = require("../models/file");
 const crypto = require("crypto");
 const fs = require("fs");
 const constants = require("../constants/file-constants");
 
+// Ensure uploads directory exists
+const uploadsDir = path.join(__dirname, '..', 'uploads');
+if (!fs.existsSync(uploadsDir)) {
+  fs.mkdirSync(uploadsDir, { recursive: true });
+}
+
 let storage = multer.diskStorage({
-  destination: (req, file, cb) => cb(null, "uploads/"),
+  destination: (req, file, cb) => {
+    // Double-check directory exists at upload time
+    if (!fs.existsSync(uploadsDir)) {
+      fs.mkdirSync(uploadsDir, { recursive: true });
+    }
+    cb(null, "uploads/");
+  },
   filename: (req, file, cb) => {
     const uniqname = `${Date.now()}-${Math.round(
       Math.random() * 1e9
@@ -26,88 +37,70 @@ let upload = multer({
   },
 }).single("myFile");
 
+// E2EE Upload endpoint - files are already encrypted client-side
 router.post("/", (req, res) => {
   upload(req, res, async (err) => {
-    if (!req.file) {
-      return res.status(400).json({
-        error: "File missing",
-      });
-    }
-
+    // Handle multer errors first
     if (err) {
-      return res.status(500).send({
-        error: err.message,
-      });
-    }
-
-    // Encryption logic starts here
-    try {
-      const encryptionKey = process.env.KEY;
-      if (!encryptionKey || Buffer.from(encryptionKey).length !== 32) {
-        console.error("Server encryption key not configured correctly.");
-        // Attempt to delete the uploaded file if key is invalid
-        if (req.file && req.file.path) {
-          try {
-            fs.unlinkSync(req.file.path);
-          } catch (unlinkErr) {
-            console.error("Error deleting file after key validation failure:", unlinkErr);
-          }
-        }
-        return res.status(500).json({
-          error: "Server encryption key not configured correctly. Please contact the administrator.",
+      console.error("Multer error:", err);
+      if (err.code === 'LIMIT_FILE_SIZE') {
+        return res.status(400).json({
+          error: "File too large. Maximum size allowed is " + (constants.maxAllowedFileSize / (1024 * 1024)) + "MB"
         });
       }
+      return res.status(500).json({
+        error: "Upload failed: " + err.message,
+      });
+    }
 
-      const iv = crypto.randomBytes(16);
-      const cipher = crypto.createCipheriv('aes-256-cbc', Buffer.from(encryptionKey), iv);
-      
-      const filePath = req.file.path;
-      const fileBuffer = fs.readFileSync(filePath);
-      
-      const encryptedData = Buffer.concat([cipher.update(fileBuffer), cipher.final()]);
-      const dataToStore = Buffer.concat([iv, encryptedData]);
-      
-      fs.writeFileSync(filePath, dataToStore);
-      
-      // Update file size to reflect the size of the encrypted file (IV + encrypted content)
-      req.file.size = dataToStore.length;
+    if (!req.file) {
+      return res.status(400).json({
+        error: "No file uploaded. Please select a file to upload.",
+      });
+    }
 
-    } catch (encryptionError) {
-      console.error("Encryption error:", encryptionError);
-      // Attempt to delete the uploaded file if encryption fails
-      if (req.file && req.file.path) {
+    // Generate a unique encryption key for this file (client-side will use this)
+    const encryptionKey = crypto.randomBytes(32).toString('hex');
+    
+    // Store file metadata (file is already encrypted client-side)
+    const metadata = {
+      filename: req.file.filename,
+      uuid: uuid4(),
+      path: req.file.path,
+      size: req.file.size,
+      originalName: req.body.originalName || req.file.originalname
+    };
+
+    let savedFile;
+    try {
+      savedFile = await saveFileMetadata(metadata);
+      if (!savedFile) {
+        throw new Error("saveFileMetadata returned null");
+      }
+    } catch (metadataError) {
+      console.error("Metadata save error:", metadataError.message);
+
+      // Clean up uploaded file if metadata save fails
+      if (req.file?.path && fs.existsSync(req.file.path)) {
         try {
           fs.unlinkSync(req.file.path);
         } catch (unlinkErr) {
-          console.error("Error deleting file after encryption failure:", unlinkErr);
+          console.error("Error deleting file after metadata save failure:", unlinkErr.message);
         }
       }
+
       return res.status(500).json({
-        error: "Failed to encrypt the file.",
-      });
-    }
-    // Encryption logic ends here
-
-    const metadata = {
-      filename: req.file.filename,
-      uuid: uuid4(), // Keep existing uuid generation for consistency here
-      path: req.file.path,
-      size: req.file.size, // This is the encrypted file size
-    };
-
-    const savedFile = await saveFileMetadata(metadata);
-
-    if (!savedFile) {
-      return res.status(500).json({
-        error: "Failed to save file metadata."
+        error: "Failed to save file information. Please try again."
       });
     }
 
-    const fileUrl = `https://synkross.alwaysdata.net/files/${savedFile.uuid}`;
+    // Include encryption key in URL fragment (not sent to server)
+    const fileUrl = `https://synkross.alwaysdata.net/files/${savedFile.uuid}#${encryptionKey}`;
     qr.toDataURL(fileUrl, (err, src) => {
       return res.status(200).json({
         file: fileUrl,
         qr: err ? null : src,
+        encryptionKey: encryptionKey // Also return key separately for client use
       });
     });
   });
@@ -150,11 +143,18 @@ router.post("/sendmail", async (req, res) => {
     const updatedFile = await updateFileMetadata(uuid, { sender: file.sender, recipients: file.recipients });
 
     if (!updatedFile) {
-        // This could happen if the file was deleted between getFileMetadata and updateFileMetadata
-        return res.status(500).json({
-            error: "Failed to update file metadata. File might have been deleted."
-        });
+      // This could happen if the file was deleted between getFileMetadata and updateFileMetadata
+      return res.status(500).json({
+        error: "Failed to update file metadata. File might have been deleted."
+      });
     }
+
+    // Extract encryption key from the original URL if it was provided
+    const originalUrl = req.body.originalUrl || `${process.env.APP_BASE_URL}/files/${file.uuid}`;
+    const encryptionKey = originalUrl.includes('#') ? originalUrl.split('#')[1] : '';
+    const downloadLinkWithKey = encryptionKey ? 
+      `${process.env.APP_BASE_URL}/files/${file.uuid}#${encryptionKey}` : 
+      `${process.env.APP_BASE_URL}/files/${file.uuid}`;
 
     const sendMail = require("../services/emailService");
     sendMail({
@@ -164,7 +164,7 @@ router.post("/sendmail", async (req, res) => {
       text: `${sender} shared a file with you.`,
       html: require("../services/emailTemplate")({
         sender,
-        downloadLink: `${process.env.APP_BASE_URL}/files/${file.uuid}?source=email`,
+        downloadLink: downloadLinkWithKey,
         size: parseInt(file.size / 1000) + " KB",
         siteLink: process.env.APP_BASE_URL,
         expires: "24 hours",

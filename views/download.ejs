@@ -25,20 +25,98 @@
   </nav>
   <main>
   <section class="download-container">
-    <% if(locals.error) {%>
-    <div class="wrapper error">
-      <h4><%= locals.error %> </h4>
-      <p>Requested file link may have been modifed or expired. <br>Ask sender to share the file again.</p>
-    </div>
-    <% } else {%>
-    <div class="wrapper success">
-      <h4>Ready for download!</h4>
-      <p>Download link will expire in 24 hours after it's shared for the first time.</p>
-      <a class="btn" href="<%= downloadLink %>">Download (<%= parseInt(size/1000) %> KB) </a>
+    <div class="container">
+      <% if(locals.error) {%>
+      <div class="wrapper error">
+        <div class="error-icon">
+          <svg xmlns="http://www.w3.org/2000/svg" width="80" height="80" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="10"/>
+            <line x1="15" y1="9" x2="9" y2="15"/>
+            <line x1="9" y1="9" x2="15" y2="15"/>
+          </svg>
+        </div>
+        <h4><%= locals.error %></h4>
+        <p>The file link may have expired or been modified.<br>Please ask the sender to share the file again.</p>
+        <a href="/" class="btn secondary">Go Home</a>
+      </div>
+      <% } else {%>
+      <div class="wrapper success">
+        <div class="file-icon">
+          <svg xmlns="http://www.w3.org/2000/svg" width="100" height="100" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+            <polyline points="14,2 14,8 20,8"/>
+            <line x1="16" y1="13" x2="8" y2="13"/>
+            <line x1="16" y1="17" x2="8" y2="17"/>
+            <polyline points="10,9 9,9 8,9"/>
+          </svg>
+        </div>
+        <h4>Ready for download!</h4>
+        <!--<div class="file-info">
+          <div class="filename"><%= filename %></div>
+          <div class="filesize"><%= parseInt(size/1000) %> KB</div>
+        </div>
+        <% if(locals.isE2EE) {%>
+        <div class="security-info">
+          <div class="security-badge">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
+              <circle cx="12" cy="16" r="1"/>
+              <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+            </svg>
+            End-to-End Encrypted
+          </div>
+          <p>This file is encrypted and will be decrypted securely in your browser. The server never sees your file content.</p>
+        </div>-->
+        <button id="downloadBtn" class="btn primary" data-uuid="<%= uuid %>" data-filename="<%= filename %>">
+          <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+            <polyline points="7,10 12,15 17,10"/>
+            <line x1="12" y1="15" x2="12" y2="3"/>
+          </svg>
+          Download File
+        </button>
+        <% } else {%>
+        <!--<div class="security-info">
+          <div class="security-badge basic">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+            </svg>
+            Server Encrypted
+          </div>
+          <p>This file is encrypted on our servers and will be automatically deleted after 24 hours.</p>
+        </div>-->
+        <a class="btn primary" href="<%= downloadLink %>">
+          <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+            <polyline points="7,10 12,15 17,10"/>
+            <line x1="12" y1="15" x2="12" y2="3"/>
+          </svg>
+          Download File
+        </a>
+        <% }%>
+        <!--<div class="expiry-info">
+          <small>⏰ This link expires in 24 hours from first share</small>
+        </div>-->
+      </div>
       <% }%>
     </div>
   </section>
   </main>
+  
+  <footer class="footer">
+    <div class="footer-container">
+      <a href="/tos" class="footer-link">Terms of Service</a> |
+      <a href="/privacy" class="footer-link">Privacy Policy</a> |
+      <a href="/license" class="footer-link">License</a> |
+      <a href="https://github.com/axrxvm/synkros" class="footer-link">GitHub</a> |
+      <a href="/report" class="footer-link">Report Abuse</a>
+    </div>
+  </footer>
+
+  <% if(locals.isE2EE) {%>
+  <script src="/js/e2ee.js"></script>
+  <script src="/js/download.js"></script>
+  <% }%>
 </body>
 
 </html>

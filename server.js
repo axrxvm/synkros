@@ -29,31 +29,68 @@ app.get('/tos', (req, res) => { res.render('tos'); });
 app.get("/report", (req, res) => { res.render("abuse"); });
 app.get("/license", (req, res) => { res.render("license"); });
 
-
-const server = app.listen(PORT, () => {
-  console.log(`Listening to port ${PORT}`);
+// Manual cleanup trigger for testing (remove in production)
+app.get("/trigger-cleanup", async (req, res) => {
+  console.log("Manual cleanup triggered");
+  await triggerCleanup();
+  res.json({ message: "Cleanup triggered", timestamp: new Date().toISOString() });
 });
 
-// Schedule cron job for cleanup
-cron.schedule("0 0 * * *", () => {
-  console.log("Running cleanup cron job");
-  const options = {
-    hostname: "https://synkross.alwaysdata.net/",
-    port: PORT,
-    path: "/cleanup",
-    method: "GET",
-  };
 
-  const req = http.request(options, (res) => {
-    console.log(`Cleanup request status code: ${res.statusCode}`);
-    res.on("data", (d) => {
-      process.stdout.write(d);
+const server = app.listen(PORT, () => {
+  console.log(`🚀 Server listening on port ${PORT}`);
+  console.log(`⏰ Auto-cleanup scheduled to run daily at midnight (cron: "0 0 * * *")`);
+  console.log(`🧹 Cleanup time limit: ${require('./constants/file-constants').cleanupTimeLimit / (60 * 60 * 1000)} hours`);
+  console.log(`🔧 Manual cleanup available at: http://localhost:${PORT}/trigger-cleanup`);
+});
+
+// Function to trigger cleanup manually or via cron
+async function triggerCleanup() {
+  console.log("Triggering cleanup at", new Date().toISOString());
+  
+  try {
+    // Make internal request to cleanup endpoint
+    const options = {
+      hostname: "localhost",
+      port: PORT,
+      path: "/cleanup",
+      method: "GET",
+    };
+
+    const req = http.request(options, (res) => {
+      console.log(`Cleanup completed with status: ${res.statusCode}`);
+      
+      let responseData = '';
+      res.on("data", (chunk) => {
+        responseData += chunk;
+      });
+      
+      res.on("end", () => {
+        if (res.statusCode === 200) {
+          console.log("Cleanup executed successfully");
+        } else {
+          console.error("Cleanup failed with response:", responseData);
+        }
+      });
     });
-  });
 
-  req.on("error", (error) => {
-    console.error("Error running cleanup cron job:", error);
-  });
+    req.on("error", (error) => {
+      console.error("Error running cleanup:", error);
+    });
 
-  req.end();
+    req.setTimeout(30000, () => {
+      console.error("Cleanup request timed out");
+      req.destroy();
+    });
+
+    req.end();
+  } catch (error) {
+    console.error("Failed to trigger cleanup:", error);
+  }
+}
+
+// Schedule cron job for cleanup - runs daily at midnight
+cron.schedule("0 0 * * *", async () => {
+  console.log("Running scheduled cleanup cron job");
+  await triggerCleanup();
 });

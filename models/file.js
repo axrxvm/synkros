@@ -28,7 +28,9 @@ async function saveFileMetadata(metadata) {
   if (!metadata.uuid) {
     metadata.uuid = randomUUID();
   }
-  metadata.createdAt = new Date().toISOString();
+  if (!metadata.createdAt) {
+    metadata.createdAt = new Date().toISOString();
+  }
   metadata.updatedAt = new Date().toISOString();
 
   const filePath = path.join(DATA_DIR, `${metadata.uuid}.json`);

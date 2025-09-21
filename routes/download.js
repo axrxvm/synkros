@@ -1,50 +1,41 @@
 const router = require('express').Router();
 const { getFileMetadata } = require('../models/file');
-const crypto = require('crypto');
 const fs = require('fs');
 
+// E2EE Download endpoint - serves encrypted file directly for client-side decryption
 router.get('/:uuid', async (req, res) => {
   try {
     const file = await getFileMetadata(req.params.uuid);
 
     if (!file) {
-      return res.render('download', {
-        error: 'Incorrect file link'
-      });
-    }
-
-    const encryptionKey = process.env.KEY;
-    if (!encryptionKey || Buffer.from(encryptionKey).length !== 32) {
-      console.error("Server decryption key not configured correctly.");
-      return res.render('download', {
-        error: 'Server error: Decryption key issue. Please contact administrator.'
+      return res.status(404).json({
+        error: 'File not found'
       });
     }
 
     const filePath = `${__dirname}/../${file.path}`;
 
-    // Decryption Process
+    // Check if file exists
+    if (!fs.existsSync(filePath)) {
+      return res.status(404).json({
+        error: 'File not found on server'
+      });
+    }
+
+    // Send encrypted file directly - client will decrypt
     const encryptedFileBuffer = fs.readFileSync(filePath);
-    const iv = encryptedFileBuffer.slice(0, 16);
-    const ciphertext = encryptedFileBuffer.slice(16);
-
-    const decipher = crypto.createDecipheriv('aes-256-cbc', Buffer.from(encryptionKey), iv);
-    const decryptedBuffer = Buffer.concat([decipher.update(ciphertext), decipher.final()]);
-
-    // Send Decrypted Data
-    res.setHeader('Content-Disposition', `attachment; filename="${file.filename}"`);
-    res.setHeader('Content-Type', 'application/octet-stream'); // Generic content type
-    res.setHeader('Content-Length', decryptedBuffer.length);
-    res.send(decryptedBuffer);
+    
+    res.setHeader('Content-Type', 'application/octet-stream');
+    res.setHeader('Content-Length', encryptedFileBuffer.length);
+    res.setHeader('X-Original-Filename', file.originalName || file.filename);
+    res.setHeader('Access-Control-Expose-Headers', 'X-Original-Filename');
+    
+    res.send(encryptedFileBuffer);
 
   } catch (error) {
-    console.error("Error during file download/decryption:", error);
-    // Check if the error is due to file not found after already checking for file in DB
-    if (error.code === 'ENOENT') {
-        return res.render('download', { error: 'File not found on server.' });
-    }
-    return res.render('download', {
-      error: 'Error processing file for download. The file might be corrupted or the server key is incorrect.'
+    console.error("Error during file download:", error);
+    return res.status(500).json({
+      error: 'Error processing file for download'
     });
   }
 });

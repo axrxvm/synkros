@@ -19,14 +19,15 @@ const cleanUpLink = `https://synkross.alwaysdata.net/cleanup?ts=${random}${salt}
 const code = process.env.CLEANUP_CODE;
 router.get("/", async (req, res) => {
   const files = await File.getAllFileMetadata();
-  const allFiles = files.map(({ _doc: file }) => file);
+  const allFiles = files;
 
   const formattedFiles = allFiles
     .map((file) => ({
       ...file,
       originalSize: file.size,
       size: formatBytes(file.size),
-      uploaded: timeAgo.format(file.createdAt, "en_US"),
+      uploaded: file.createdAt ? timeAgo.format(file.createdAt, "en_US") : "Unknown",
+      recipients: file.recipients || [],
     }))
     .reverse();
 

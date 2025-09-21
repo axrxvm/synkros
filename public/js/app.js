@@ -74,7 +74,7 @@ fileInput.addEventListener("change", () => {
   uploadFile();
 });
 
-const uploadFile = () => {
+const uploadFile = async () => {
   uploadView.style.display = "none";
   progressView.style.display = "block";
   postUploadView.style.display = "none";
@@ -83,72 +83,95 @@ const uploadFile = () => {
   if (uploadSpeedEl) uploadSpeedEl.innerText = "";
   if (uploadETAEl) uploadETAEl.innerText = "";
 
-  const file = fileInput.files[0];
-  const formData = new FormData();
-  formData.append("myFile", file);
+  try {
+    const file = fileInput.files[0];
+    
+    // Generate encryption key and encrypt file client-side
+    const encryptionKey = await window.e2eeCrypto.generateKey();
+    const encryptedBlob = await window.e2eeCrypto.createEncryptedBlob(file, encryptionKey);
+    const keyHex = await window.e2eeCrypto.exportKeyToHex(encryptionKey);
+    
+    const formData = new FormData();
+    formData.append("myFile", encryptedBlob, file.name + '.encrypted');
+    formData.append("originalName", file.name);
 
-  const xhr = new XMLHttpRequest();
+    const xhr = new XMLHttpRequest();
 
-  xhr.upload.onprogress = function (event) {
-    let percent = Math.round((100 * event.loaded) / event.total);
-    progressBar.style.width = `${percent}%`;
+    xhr.upload.onprogress = function (event) {
+      let percent = Math.round((100 * event.loaded) / event.total);
+      progressBar.style.width = `${percent}%`;
 
-    if (event.lengthComputable && uploadStartTime) {
-      const currentTime = Date.now();
-      const elapsedTimeInSeconds = (currentTime - uploadStartTime) / 1000;
+      if (event.lengthComputable && uploadStartTime) {
+        const currentTime = Date.now();
+        const elapsedTimeInSeconds = (currentTime - uploadStartTime) / 1000;
 
-      if (elapsedTimeInSeconds > 0) {
-        const bytesLoaded = event.loaded;
-        const totalBytes = event.total;
-        const uploadSpeed = bytesLoaded / elapsedTimeInSeconds; // Bytes per second
-        const remainingBytes = totalBytes - bytesLoaded;
-        const etaInSeconds = remainingBytes / uploadSpeed;
+        if (elapsedTimeInSeconds > 0) {
+          const bytesLoaded = event.loaded;
+          const totalBytes = event.total;
+          const uploadSpeed = bytesLoaded / elapsedTimeInSeconds; // Bytes per second
+          const remainingBytes = totalBytes - bytesLoaded;
+          const etaInSeconds = remainingBytes / uploadSpeed;
 
-        if (uploadSpeedEl) {
-          uploadSpeedEl.innerText = formatSpeed(uploadSpeed);
-        }
-        if (uploadETAEl) {
-          uploadETAEl.innerText = formatETA(etaInSeconds);
-        }
-      }
-    }
-  };
-
-  xhr.upload.onerror = function () {
-    showToast(`Error in upload: ${xhr.status}.`);
-    fileInput.value = "";
-  };
-
-  xhr.onreadystatechange = function () {
-    if (xhr.readyState == XMLHttpRequest.DONE) {
-      if (xhr.status === 200) {
-        onFileUploadSuccess(xhr.responseText);
-      } else {
-        let errorMessage = `Error processing file: ${xhr.status} ${xhr.statusText}`;
-        try {
-          const errorResponse = JSON.parse(xhr.responseText);
-          if (errorResponse && errorResponse.error) {
-            errorMessage = errorResponse.error;
+          if (uploadSpeedEl) {
+            uploadSpeedEl.innerText = formatSpeed(uploadSpeed);
           }
-        } catch (e) {
-          // Response was not JSON or no 'error' property, use default message
-          console.error("Could not parse error response as JSON:", e);
-        }
-        showToast(errorMessage);
-        // Reset UI
-        uploadView.style.display = "block";
-        progressView.style.display = "none";
-        postUploadView.style.display = "none";
-        if (fileInput) {
-          fileInput.value = ""; // Clear the file input
+          if (uploadETAEl) {
+            uploadETAEl.innerText = formatETA(etaInSeconds);
+          }
         }
       }
-    }
-  };
+    };
 
-  xhr.open("POST", "/api/files");
-  uploadStartTime = Date.now(); // Record start time before sending
-  xhr.send(formData);
+    xhr.upload.onerror = function () {
+      showToast(`Error in upload: ${xhr.status}.`);
+      fileInput.value = "";
+    };
+
+    xhr.onreadystatechange = function () {
+      if (xhr.readyState == XMLHttpRequest.DONE) {
+        if (xhr.status === 200) {
+          const response = JSON.parse(xhr.responseText);
+          // Replace server's key with our client-generated key in the URL
+          response.file = response.file.replace(/#.*$/, '') + '#' + keyHex;
+          onFileUploadSuccess(JSON.stringify(response));
+        } else {
+          let errorMessage = `Error processing file: ${xhr.status} ${xhr.statusText}`;
+          try {
+            const errorResponse = JSON.parse(xhr.responseText);
+            if (errorResponse && errorResponse.error) {
+              errorMessage = errorResponse.error;
+            }
+          } catch (e) {
+            // Response was not JSON or no 'error' property, use default message
+            console.error("Could not parse error response as JSON:", e);
+          }
+          showToast(errorMessage);
+          // Reset UI
+          uploadView.style.display = "block";
+          progressView.style.display = "none";
+          postUploadView.style.display = "none";
+          if (fileInput) {
+            fileInput.value = ""; // Clear the file input
+          }
+        }
+      }
+    };
+
+    xhr.open("POST", "/api/files");
+    uploadStartTime = Date.now(); // Record start time before sending
+    xhr.send(formData);
+    
+  } catch (error) {
+    console.error('Encryption error:', error);
+    showToast('Failed to encrypt file. Please try again.');
+    // Reset UI
+    uploadView.style.display = "block";
+    progressView.style.display = "none";
+    postUploadView.style.display = "none";
+    if (fileInput) {
+      fileInput.value = "";
+    }
+  }
 };
 
 const formatSpeed = (bytesPerSecond) => {
@@ -224,9 +247,10 @@ emailForm.addEventListener("submit", (e) => {
   const url = fileURL.value;
 
   const formData = {
-    uuid: url.split("/").splice(-1, 1)[0],
+    uuid: url.split("/").splice(-1, 1)[0].split("#")[0], // Remove encryption key from UUID
     recipient: emailForm.elements["mail_to"].value,
     sender: emailForm.elements["mail_from"].value,
+    originalUrl: url, // Include the full URL with encryption key
   };
 
   fetch("/api/files/sendmail", {

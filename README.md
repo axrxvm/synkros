@@ -20,7 +20,7 @@ Whether you’re sending a project build, a resume, or a dumb meme—Synkros mak
 | Feature | Description |
 |--------|-------------|
 | ⏲️ **Auto-Delete After 24 Hours** | Files are automatically removed after 24h to keep things clean and temporary. |
-| 🔐 **Encrypted File Storage** | Files are encrypted at rest (AES-256-CBC) and in transit—**not even we can read them**. |
+| 🔐 **End-to-End Encrypted Storage** | Files are encrypted client-side (AES-256-GCM) before upload—**not even the server can read them**. |
 | 📱 **QR Code for Each File** | Instantly generate a scannable QR code for every upload—perfect for sharing across devices. |
 | ✉️ **Email Link to Recipient** | Enter an email, and Synkros will mail the file link directly—no hassle. |
 | 🧼 **Minimalist UI** | Designed to be dead simple. Drag. Drop. Done. |
@@ -46,17 +46,24 @@ Whether you’re sending a project build, a resume, or a dumb meme—Synkros mak
 
 ## 🔐 Security Features
 
-### File Encryption
+### End-to-End Encryption (E2EE)
 
-All files uploaded to Synkros are encrypted at rest on the server using **AES-256-CBC encryption**. When a file is requested for download, it is decrypted on the server before being sent to the recipient. This ensures that your file contents remain private even if the underlying storage is directly accessed. The encryption and decryption processes require a secret `KEY` configured on the server and are handled automatically.
+Synkros implements **true end-to-end encryption** using **AES-256-GCM encryption**:
 
-### Other Security Measures
+- **Client-Side Encryption**: Files are encrypted in your browser before upload using the Web Crypto API
+- **Unique Keys**: Each file gets its own randomly generated 256-bit encryption key
+- **Key in URL Fragment**: The encryption key is embedded in the download URL fragment (`#key`) and never sent to the server
+- **Server-Side Blind**: The server stores only encrypted data and cannot decrypt files without the key
+- **Client-Side Decryption**: Files are decrypted in the recipient's browser when downloaded
 
-- **File keys are never stored (for client-side encryption model)** — access is only possible with the share link. *Note: Currently, server-side encryption relies on a server-managed key.*
-- **No cookies, no analytics, no logs** (relevant access/error logs for maintenance are minimal).
-- **Auto-deletion** of all uploads after 24 hours.
-- Built with a **zero-knowledge approach aspiration**:
-  > If someone asks us what you uploaded, we literally couldn't tell them.
+### Zero-Knowledge Architecture
+
+- **Encryption keys are never stored on the server** — access is only possible with the complete share link
+- **Server cannot decrypt files** — even with full server access, files remain encrypted
+- **No cookies, no analytics, no logs** (minimal access/error logs for maintenance only)
+- **Auto-deletion** of all uploads after 24 hours
+- Built with a **true zero-knowledge approach**:
+  > If someone asks us what you uploaded, we literally couldn't tell them even if we wanted to.
 
 ---
 
@@ -73,15 +80,12 @@ For self-hosting or development, this application requires certain environment v
     *   `MONGODB_CONNECTION_URL`: Your MongoDB connection string.
     *   `APP_BASE_URL`: The base URL of your application (e.g., `http://localhost:3000`).
     *   `PORT`: The port the application should run on (e.g., `3000`).
-    *   `KEY`: This key is crucial for securing uploaded files using AES-256 encryption.
-        *   **Format**: The `KEY` must be a string that is exactly 32 bytes (256 bits) long.
-        *   **Example**: `KEY=MySuperSecretEncryptionKey123456` (Replace with your own strong key)
-        *   **Generating a Key**: You can use a strong random string generator to create a suitable key. Ensure it meets the 32-byte length requirement. *For example, in Node.js: `require('crypto').randomBytes(32).toString('hex')` (use the first 32 characters of the hex output or ensure the resulting string is 32 bytes).*
+    *   ~~`KEY`: No longer needed - E2EE encryption keys are generated client-side~~
     *   `SMTP_HOST`, `SMTP_PORT`, `MAIL_USER`, `MAIL_PASSWORD`: For email sending functionality.
     *   `CLEANUP_CODE`: A secret code for triggering the cleanup job manually via an API endpoint if needed.
     *   `ALLOWED_CLIENTS`: Comma-separated list of client URLs allowed to access the API (CORS).
 
-**Important**: Keep your `.env` file (and especially the `KEY` and database credentials) secure and out of version control. The `.gitignore` file should already be configured to ignore `.env`.
+**Important**: Keep your `.env` file secure and out of version control. The `.gitignore` file should already be configured to ignore `.env`.
 
 ---
 
@@ -89,7 +93,7 @@ For self-hosting or development, this application requires certain environment v
 
 1.  **Clone the repository:**
     ```bash
-    git clone https://github.com/your-username/synkros.git 
+    git clone https://github.com/axrxvm/synkros.git 
     cd synkros
     ```
 2.  **Install dependencies:**
@@ -97,7 +101,7 @@ For self-hosting or development, this application requires certain environment v
     npm install
     ```
 3.  **Configure Environment:**
-    Create and configure your `.env` file as described in the "Environment Configuration" section above. Ensure `KEY` is set for encryption.
+    Create and configure your `.env` file as described in the "Environment Configuration" section above. Note: The `KEY` variable is no longer needed as encryption is handled client-side.
 4.  **Run the application:**
     *   For development with auto-reloading:
         ```bash

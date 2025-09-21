@@ -10,7 +10,6 @@ const constants = require("../constants/file-constants");
 
 router.get("/", async (req, res) => {
   let totalOldFiles = 0;
-  let successfullyDeletedCount = 0;
   let physicalFilesDeletedCount = 0;
   let metadataFilesDeletedCount = 0;
 
@@ -32,14 +31,23 @@ router.get("/", async (req, res) => {
     totalOldFiles = oldfiles.length;
 
     if (totalOldFiles > 0) {
+      console.log(`Starting cleanup of ${totalOldFiles} files older than 24 hours`);
+      
       for (const file of oldfiles) {
         try {
-          if (fs.existsSync(file.path)) { // Check if physical file exists
+          // Validate file path to prevent directory traversal
+          if (!file.path || !file.path.startsWith('uploads')) {
+            console.warn(`Skipping file with invalid path: ${file.path}`);
+            continue;
+          }
+
+          // Check if physical file exists and delete it
+          if (fs.existsSync(file.path)) {
             fs.unlinkSync(file.path);
-            console.log(`Successfully deleted physical file: ${file.filename}`);
+            console.log(`Successfully deleted physical file: ${file.filename} (${file.path})`);
             physicalFilesDeletedCount++;
           } else {
-            console.log(`Physical file not found, skipping deletion: ${file.filename}`);
+            console.log(`Physical file not found, skipping deletion: ${file.filename} (${file.path})`);
           }
 
           // Attempt to delete metadata regardless of physical file status,
@@ -52,9 +60,11 @@ router.get("/", async (req, res) => {
             console.log(`Could not delete metadata (or already deleted) for: ${file.uuid}`);
           }
         } catch (err) {
-          console.log(`Error during cleanup for file ${file.filename} (uuid: ${file.uuid}): `, err);
+          console.error(`Error during cleanup for file ${file.filename} (uuid: ${file.uuid}):`, err);
         }
       }
+      
+      console.log(`Cleanup completed: ${physicalFilesDeletedCount} physical files and ${metadataFilesDeletedCount} metadata entries processed`);
     }
   } catch (error) {
     console.error("Error during cleanup process:", error);

@@ -36,7 +36,7 @@ module.exports = ({ sender, downloadLink, siteLink, size, expires }) => {
                       <td>
                         <p style="margin: 0 0 15px;">Hi there,</p>
                         <p style="margin: 0 0 15px;">
-                          <strong>${sender}</strong> has shared a file with you (${size}). Click below to download:
+                          <strong>${sender}</strong> has shared a file with you (${size}). This file is end-to-end encrypted and will be decrypted in your browser. Click below to download:
                         </p>
 
                         <!-- Download Button -->
