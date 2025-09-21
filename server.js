@@ -29,13 +29,6 @@ app.get('/tos', (req, res) => { res.render('tos'); });
 app.get("/report", (req, res) => { res.render("abuse"); });
 app.get("/license", (req, res) => { res.render("license"); });
 
-// Manual cleanup trigger for testing (remove in production)
-app.get("/trigger-cleanup", async (req, res) => {
-  console.log("Manual cleanup triggered");
-  await triggerCleanup();
-  res.json({ message: "Cleanup triggered", timestamp: new Date().toISOString() });
-});
-
 
 const server = app.listen(PORT, () => {
   console.log(`🚀 Server listening on port ${PORT}`);
