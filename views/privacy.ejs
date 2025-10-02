@@ -1,121 +1,112 @@
 <!DOCTYPE html>
 <html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Privacy Policy — Synkros</title>
+    <meta name="description" content="Synkros Privacy Policy. Understand how we protect your data and respect your privacy." />
+    <link rel="stylesheet" href="/css/style.min.css" />
+    <style>
+      main {
+        padding: 80px 20px 40px;
+        max-width: 900px;
+        margin: auto;
+      }
+      main h1, main h2, main h3 {
+        color: var(--app-color);
+        margin-top: 2rem;
+      }
+      main p, main li {
+        color: #fff;
+        line-height: 1.6;
+        margin-bottom: 1rem;
+      }
+      main ul {
+        list-style-type: disc;
+        padding-left: 1.5rem;
+        margin-bottom: 2rem;
+      }
+      main a {
+        color: var(--link-color);
+        text-decoration: none;
+      }
+      main a:hover {
+        text-decoration: underline;
+      }
+      strong {
+        color: var(--text-color-strong);
+      }
+    </style>
+  </head>
 
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Privacy Policy — Synkros</title>
-  <meta name="description" content="Synkros Privacy Policy: No accounts. No ads. No tracking. Just files." />
-  <link rel="stylesheet" href="/css/style.min.css" />
-  <style>
-    main {
-      padding: 80px 20px 40px;
-      max-width: 900px;
-      margin: auto;
-    }
-
-    main h1,
-    main h2 {
-      color: var(--app-color);
-      margin-top: 2rem;
-    }
-
-    main p,
-    main li {
-      color: #fff;
-      line-height: 1.6;
-      margin-bottom: 1rem;
-    }
-
-    main ul {
-      list-style-type: disc;
-      padding-left: 1.5rem;
-      margin-bottom: 2rem;
-    }
-  </style>
-</head>
-
-<body>
-  <nav class="navbar">
-    <div class="navbar-container">
-      <a href="/" class="navbar-logo">Synkros</a>
-      <div class="navbar-links">
-        <a href="/" class="nav-link">Upload</a>
-        <a href="/privacy" class="nav-link">Privacy</a>
+  <body>
+    <nav class="navbar">
+      <div class="navbar-container">
+        <a href="/" class="navbar-logo">Synkros</a>
+        <div class="navbar-links">
+          <a href="/" class="nav-link">Upload</a>
+          <a href="/privacy" class="nav-link">Privacy</a>
+        </div>
       </div>
-    </div>
-  </nav>
+    </nav>
 
-  <main>
-    <h1>🔐 Privacy Policy</h1>
-    <p style="color: var(--text-color-muted);">Effective: June 15, 2025</p>
+    <main>
+      <h1>Privacy Policy</h1>
+      <p style="color: var(--text-color-muted);">Last Updated: October 2, 2025</p>
 
-    <p>We don’t want your data. We don’t track you. We don’t sell anything. Period.</p>
+      <h2>1. Our Commitment to Privacy</h2>
+      <p>Synkros ("we," "us," or "our") is dedicated to protecting your privacy. This Privacy Policy explains what information we handle and why, ensuring transparency and compliance with data protection laws like the General Data Protection Regulation (GDPR) and the California Consumer Privacy Act (CCPA). Our guiding principle is to collect the minimum amount of information necessary to provide a secure and functional service.</p>
 
-    <h2>What We Don’t Collect</h2>
-    <ul>
-      <li>No IP logs</li>
-      <li>No cookies</li>
-      <li>No trackers or analytics</li>
-      <li>No user accounts or sessions</li>
-    </ul>
+      <h2>2. What Information We Do Not Collect</h2>
+      <p>We have engineered our systems to avoid collecting personal data wherever possible. We <strong>DO NOT</strong> collect or log:</p>
+      <ul>
+        <li><strong>IP Addresses:</strong> Your IP address is not stored in our standard operational logs.</li>
+        <li><strong>Personal Information:</strong> We do not require you to create an account or provide any personal details like your name or email address to use our basic service.</li>
+        <li><strong>Tracking Information:</strong> We do not use cookies, tracking pixels, or browser fingerprinting technologies.</li>
+      </ul>
 
-    <h2>What We Handle (Temporarily)</h2>
-    <p>To let you share files, we temporarily process:</p>
-    <ul>
-      <li><strong>Uploaded files</strong> — auto-deleted after 24 hours</li>
-      <li><strong>Optional email addresses</strong> — used once, never stored</li>
-      <li><strong>Minimal logs</strong> — only for abuse prevention, auto-purged</li>
-    </ul>
+      <h2>3. Information We Handle and Why</h2>
+      <p>To operate the Service, we must handle certain data. This data is processed only for the legitimate purposes outlined below and is deleted automatically.</p>
+      <ul>
+        <li><strong>Uploaded Files:</strong> The encrypted files you upload are stored on our servers. Because we use client-side, end-to-end encryption, we have no access to the file contents. Files are automatically and permanently deleted after 24 hours.</li>
+        <li><strong>File Metadata:</strong> We process non-personal metadata associated with your upload, such as the filename and file size, to manage the file and display it to the recipient. This metadata is deleted along with the file.</li>
+        <li><strong>Optional Email Addresses:</strong> If you use the optional feature to email a link, the recipient's email address is used solely to send the one-time email and is not stored or logged.</li>
+        <li><strong>Temporary Abuse Logs:</strong> In response to a valid abuse report or to mitigate a direct threat to our service (e.g., a DDoS attack), we may temporarily log relevant metadata, which could include IP addresses. This data is used exclusively for the investigation and is purged upon its conclusion.</li>
+      </ul>
 
-    <h2>Encryption</h2>
-    <p>
-      We offer encryption by default - to every file - to protect your files:
-    </p>
-    <ul>
-      <li><strong>End-to-End Encryption (E2EE)</strong> — For maximum security, files are encrypted in your browser
-        before upload using AES-256-GCM. The encryption key never leaves your device and is embedded in the share link
-        fragment. We cannot decrypt these files — only you and your recipient can.</li>
-    </ul>
-    <p>
-      With E2EE, your files are encrypted locally in your browser before being sent to our servers. The decryption key
-      is generated on your device and shared through the URL fragment, which is never sent to our
-      servers. This means we have zero knowledge of your file contents.
-    </p>
+      <h2>4. Data Security</h2>
+      <p>We implement robust technical measures to protect the data we handle. Our primary security feature is <strong>client-side, end-to-end encryption (E2EE)</strong> using the AES-256-GCM standard. The encryption key is generated in your browser and included in the URL fragment (#), which is never sent to our servers. This means we cannot decrypt your files, and only someone with the full link can access the content.</p>
 
-    <h2>Email Feature</h2>
-    <p>
-      If you use the email feature, we send the file link to your recipient using the provided address.
-      We do not store, log, or reuse the email. It's deleted immediately after delivery.
-    </p>
+      <h2>5. Data Retention</h2>
+      <p>All user files and associated metadata are permanently deleted from our servers 24 hours after they are uploaded. We do not create backups or archives. Once a file is deleted, it cannot be recovered.</p>
 
-    <h2>Data Retention</h2>
-    <p>
-      Uploaded files are automatically deleted after 24 hours. We do not create backups or archives.
-      When it’s gone, it’s gone.
-    </p>
+      <h2>6. Your Data Protection Rights (GDPR & CCPA)</h2>
+      <p>You have rights concerning your personal data. Given the anonymous nature of our service, exercising these rights may be limited, but we are committed to upholding them.</p>
+      <ul>
+        <li><strong>Right of Access:</strong> You can access the data you've uploaded using your unique share link.</li>
+        <li><strong>Right to Erasure:</strong> Your data is automatically erased after 24 hours. You can effectively "erase" it sooner by not sharing the link.</li>
+        <li><strong>Right to Object:</strong> You can object to data processing by not using our Service.</li>
+      </ul>
+      <p>Because we do not store personal data or user accounts, rights such as rectification or portability are generally not applicable. For specific inquiries, please contact us.</p>
 
-    <h2>Abuse Reporting</h2>
-    <p>
-      If we receive a valid abuse complaint (e.g. related to illegal content), we may temporarily log IP
-      addresses or metadata to investigate and resolve the issue. Offensive or unlawful content will be removed.
-    </p>
+      <h2>7. Third-Party Disclosure</h2>
+      <p>We do not sell, trade, or otherwise transfer your data to third parties. Our service is self-contained, and we do not use third-party analytics or advertising services.</p>
 
-    <h2>Contact</h2>
-    <p>
-      Have a question or privacy concern? Email us at <strong>axrxvm@gmail.com</strong>
-    </p>
-  </main>
+      <h2>8. Changes to This Privacy Policy</h2>
+      <p>We may update this Privacy Policy from time to time. We will notify you of any changes by posting the new policy on this page and updating the "Last Updated" date. We encourage you to review this Privacy Policy periodically for any changes.</p>
 
-  <footer class="footer">
-    <div class="footer-container">
-      <a href="/tos" class="footer-link">Terms of Service</a> |
-      <a href="/privacy" class="footer-link">Privacy Policy</a> |
-      <a href="/license" class="footer-link">License</a> |
-      <a href="https://github.com/axrxvm/synkros" class="footer-link">GitHub</a> |
-      <a href="/report" class="footer-link">Report Abuse</a>
-    </div>
-  </footer>
-</body>
+      <h2>9. Contact Us</h2>
+      <p>If you have any questions or concerns about this Privacy Policy or our data practices, please contact us at <strong>axrxvm@gmail.com</strong>.</p>
+    </main>
 
+    <footer class="footer">
+      <div class="footer-container">
+        <a href="/tos" class="footer-link">Terms of Service</a> |
+        <a href="/privacy" class="footer-link">Privacy Policy</a> |
+        <a href="/license" class="footer-link">License</a> |
+        <a href="https://github.com/axrxvm/synkros" class="footer-link">GitHub</a> |
+        <a href="/report" class="footer-link">Report Abuse</a>
+      </div>
+    </footer>
+  </body>
 </html>
