@@ -21,13 +21,15 @@
         >
         <% } %>
       </p>
-      <button onclick="gotoHome()">Go to Home</button>
+  <button class="js-goto-home">Go to Home</button>
     </div>
 
-    <script>
-      function gotoHome() {
-        window.location.href = "/";
-      }
+    <script nonce="<%= locals.cspNonce %>">
+      document.addEventListener('DOMContentLoaded', function() {
+        const els = document.querySelectorAll('.js-goto-home');
+        els.forEach(el => el.addEventListener('click', () => { window.location.href = '/'; }));
+      });
     </script>
+    <script src="/js/security.js"></script>
   </body>
 </html>

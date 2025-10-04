@@ -86,10 +86,43 @@ const uploadFile = async () => {
   try {
     const file = fileInput.files[0];
     
-    // Generate encryption key and encrypt file client-side
+    // Check for performance warnings and show user feedback
+    if (window.e2eeOptimizer) {
+      const warning = window.e2eeOptimizer.getLargeFileWarning(file.size);
+      if (warning) {
+        console.log(`${warning.level.toUpperCase()}: ${warning.title} - ${warning.message}`);
+        // You could show this in a modal or toast if desired
+      }
+      
+      // Check memory availability
+      if (!window.e2eeOptimizer.hasEnoughMemory(file.size)) {
+        showToast('Warning: This file is very large and may cause performance issues on this device.');
+      }
+    }
+    
+    // Show encryption progress
+    progressBar.style.width = `0%`;
+    statusText.textContent = "Preparing encryption...";
+    
+    // Generate encryption key and encrypt file client-side with progress
     const encryptionKey = await window.e2eeCrypto.generateKey();
-    const encryptedBlob = await window.e2eeCrypto.createEncryptedBlob(file, encryptionKey);
     const keyHex = await window.e2eeCrypto.exportKeyToHex(encryptionKey);
+    
+    statusText.textContent = "Encrypting file...";
+    
+    const encryptedBlob = await window.e2eeCrypto.encryptFileWithProgress(
+      file, 
+      keyHex,
+      (progress) => {
+        // Show encryption progress (0-30% of total progress)
+        const encryptionProgress = Math.round(progress * 0.3);
+        progressBar.style.width = `${encryptionProgress}%`;
+        statusText.textContent = `Encrypting... ${progress}%`;
+      }
+    );
+    
+    // Update status for upload phase
+    statusText.textContent = "Starting upload...";
     
     const formData = new FormData();
     formData.append("myFile", encryptedBlob, file.name + '.encrypted');
@@ -99,7 +132,9 @@ const uploadFile = async () => {
 
     xhr.upload.onprogress = function (event) {
       let percent = Math.round((100 * event.loaded) / event.total);
-      progressBar.style.width = `${percent}%`;
+      // Upload progress takes 30-100% of total progress (encryption was 0-30%)
+      const totalProgress = 30 + Math.round(percent * 0.7);
+      progressBar.style.width = `${totalProgress}%`;
 
       if (event.lengthComputable && uploadStartTime) {
         const currentTime = Date.now();

@@ -113,9 +113,8 @@
             <button
               type="button"
               title="Home"
-              class="home"
+              class="home js-goto-home"
               id="uploadAnotherBtn"
-              onclick="gotoHome()"
             >
               <span>Upload another</span>
             </button>
@@ -164,11 +163,15 @@
         <a href="/report" class="footer-link">Report Abuse</a>
       </div>
     </footer>
-    <script>
-      function gotoHome() {
-        window.location.href = "/";
-      }
+    <script nonce="<%= locals.cspNonce %>">
+      // Attach click handlers to any element that should go home
+      document.addEventListener('DOMContentLoaded', function() {
+        const els = document.querySelectorAll('.js-goto-home');
+        els.forEach(el => el.addEventListener('click', () => { window.location.href = '/'; }));
+      });
     </script>
+    <script src="/js/security.js"></script>
+    <script src="/js/e2ee-optimizer.js"></script>
     <script src="/js/e2ee.js"></script>
     <script src="/js/app.js"></script>
   </body>

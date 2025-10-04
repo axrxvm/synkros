@@ -11,6 +11,111 @@
   <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico">
 
   <link rel="stylesheet" href="/css/style.min.css">
+  <style>
+  /* Progress bar button styles (moved from global stylesheet so only download page loads them) */
+  .download-container .success .btn {
+    position: relative;
+    overflow: hidden;
+    --progress: 0%;
+    /* Ensure the button has a stacking context so the pseudo-element can sit behind the content */
+    background: var(--app-color);
+    color: #fff;
+    transition: box-shadow 0.3s ease-out;
+  }
+
+  /* The fill layer — width controlled by --progress */
+  .download-container .success .btn::before {
+    content: "";
+    position: absolute;
+    left: 0;
+    top: 0;
+    height: 100%;
+    width: var(--progress);
+    background: linear-gradient(90deg, #007bff 0%, var(--app-color) 100%);
+    z-index: 0;
+    transition: width 160ms linear;
+    will-change: width;
+  }
+
+  /* Make sure button children (icon / text) render above the fill */
+  .download-container .success .btn > svg,
+  .download-container .success .btn * {
+    position: relative;
+    z-index: 1;
+  }
+
+  /* Keep the progress-active class for behavioral state but don't rely on background gradients */
+  .download-container .success .btn.progress-active {
+    transition: none; /* avoid double transitions while updating --progress */
+    animation: progress-pulse 2.2s ease-in-out infinite;
+  }
+
+  .download-container .success .btn.success {
+    background: #28a745 !important;
+    border-color: #28a745 !important;
+    animation: success-flash 0.5s ease-out;
+  }
+
+  .download-container .success .btn:disabled {
+    cursor: not-allowed;
+    opacity: 0.8;
+  }
+
+  @keyframes progress-pulse {
+    0%, 100% {
+      /* subtle green halo to indicate active download */
+      box-shadow: 0 0 0 0 rgba(40, 167, 69, 0.06);
+    }
+    50% {
+      box-shadow: 0 0 0 8px rgba(40, 167, 69, 0);
+    }
+  }
+
+  /* Make the progress fill green while downloading (progress-active state) */
+  .download-container .success .btn.progress-active::before {
+    background: linear-gradient(90deg, #28a745 0%, #20c997 100%);
+  }
+
+  /* Better visual feedback for different states */
+  .download-container .success .btn.progress-active:not(.success) {
+    color: #fff;
+    font-weight: bold;
+  }
+
+  @keyframes success-flash {
+    0% {
+      background: #28a745;
+      transform: scale(1);
+    }
+    50% {
+      background: #20c997;
+      transform: scale(1.05);
+    }
+    100% {
+      background: #28a745;
+      transform: scale(1);
+    }
+  }
+
+  /* Error state styling */
+  .download-container .success .btn.error {
+    background: #dc3545 !important;
+    border-color: #dc3545 !important;
+    animation: error-shake 0.5s ease-out;
+  }
+
+  @keyframes error-shake {
+    0%, 100% {
+      transform: translateX(0);
+    }
+    25% {
+      transform: translateX(-5px);
+    }
+    75% {
+      transform: translateX(5px);
+    }
+  }
+  </style>
 </head>
 
 <body>
@@ -117,6 +222,7 @@
   <script src="/js/e2ee.js"></script>
   <script src="/js/download.js"></script>
   <% }%>
+  <script src="/js/security.js"></script>
 </body>
 
 </html>

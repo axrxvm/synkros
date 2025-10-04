@@ -683,16 +683,20 @@ strong {
 .download-container {
   padding-bottom: 40px; /* Adjusted for footer */
   padding-top: 60px;
-  height: 100vh;
+  min-height: calc(100vh - 140px); /* Match style.min.css */
   width: 100vw;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 .download-container .wrapper {
-  height: 100%;
   width: 100%;
+  max-width: 600px;
   display: flex;
   align-items: center;
   justify-content: center;
   flex-direction: column;
+  padding: 0 20px;
 }
 
 .download-container .error h4 {
@@ -764,6 +768,7 @@ strong {
   border-color: var(--app-color-hover);
   background: var(--app-color-hover);
 }
+
 
 .card {
   background-color: var(--card-color);

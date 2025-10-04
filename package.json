@@ -1,6 +1,6 @@
 {
   "name": "synkros",
-  "version": "1.4.0",
+  "version": "1.4.5",
   "description": "File Sharing with ease, No bullshit.",
   "main": "server.js",
   "scripts": {
@@ -20,6 +20,7 @@
     "env": "^0.0.2",
     "express": "^4.18.3",
     "fs": "^0.0.1-security",
+    "helmet": "^8.1.0",
     "multer": "^1.4.5-lts.1",
     "node-cron": "^4.0.7",
     "nodemailer": "^6.9.12",

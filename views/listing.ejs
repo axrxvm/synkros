@@ -84,10 +84,10 @@
         <h4>Access Denied!</h4>
         <p>Contents of this page is restricted.</p>
 
-        <button onclick="gotoHome()">Go to Home</button>
+  <button class="js-goto-home">Go to Home</button>
       </div>
     </section>
-    <script>
+    <script nonce="<%= locals.cspNonce %>">
       function askCode() {
         let code = prompt("Please enter Access Code:");
         if (code == null || code == "") {
@@ -104,9 +104,12 @@
         }
       }
       askCode();
-      function gotoHome() {
-        window.location.href = "/";
-      }
+      // Attach go-home handlers
+      document.addEventListener('DOMContentLoaded', function() {
+        const els = document.querySelectorAll('.js-goto-home');
+        els.forEach(el => el.addEventListener('click', () => { window.location.href = '/'; }));
+      });
     </script>
+    <script src="/js/security.js"></script>
   </body>
 </html>

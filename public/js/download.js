@@ -31,23 +31,70 @@ async function handleE2EEDownload(event) {
   }
   
   try {
-    downloadBtn.textContent = 'Decrypting...';
+    // Initialize progress bar
     downloadBtn.disabled = true;
+    downloadBtn.classList.add('progress-active');
+    updateButtonProgress(downloadBtn, 0, 'Starting...');
     
     const downloadUrl = `/files/download/${uuid}`;
-    await window.e2eeCrypto.downloadAndDecrypt(downloadUrl, window.encryptionKey, filename);
     
-    downloadBtn.textContent = 'Downloaded!';
+    // Download and decrypt with progress tracking
+    await window.e2eeCrypto.downloadAndDecrypt(
+      downloadUrl, 
+      window.encryptionKey, 
+      filename,
+      (progress) => {
+        // Update button progress bar
+        let status = 'Downloading...';
+        if (progress > 50) {
+          status = 'Decrypting...';
+        }
+        if (progress >= 100) {
+          status = 'Processing...';
+        }
+        updateButtonProgress(downloadBtn, progress, status);
+      }
+    );
+    
+    // Success state
+    updateButtonProgress(downloadBtn, 100, 'Downloaded!');
+    downloadBtn.classList.remove('progress-active');
+    downloadBtn.classList.add('success');
+    
     setTimeout(() => {
       downloadBtn.textContent = originalText;
       downloadBtn.disabled = false;
+      downloadBtn.classList.remove('success');
+      downloadBtn.style.setProperty('--progress', '0%');
     }, 2000);
     
   } catch (error) {
     console.error('Download/decryption failed:', error);
-    showError('Failed to download or decrypt file. The file may be corrupted or the link is invalid.');
-    downloadBtn.textContent = originalText;
-    downloadBtn.disabled = false;
+    
+    // Provide more specific error messages
+    let errorMessage = 'Failed to download or decrypt file.';
+    if (error.message.includes('Download failed')) {
+      errorMessage = 'Failed to download file. Please check your internet connection and try again.';
+    } else if (error.message.includes('decrypt')) {
+      errorMessage = 'Failed to decrypt file. The file may be corrupted or the encryption key is invalid.';
+    } else if (error.message.includes('Worker')) {
+      errorMessage = 'Decryption service unavailable. Please refresh the page and try again.';
+    }
+    
+    showError(errorMessage);
+    
+    // Reset button state with error styling
+    downloadBtn.textContent = 'Download Failed';
+    downloadBtn.classList.remove('progress-active');
+    downloadBtn.classList.add('error');
+    downloadBtn.style.setProperty('--progress', '0%');
+    
+    // Reset to original state after delay
+    setTimeout(() => {
+      downloadBtn.textContent = originalText;
+      downloadBtn.disabled = false;
+      downloadBtn.classList.remove('error');
+    }, 3000);
   }
 }
 
@@ -71,4 +118,11 @@ function createErrorDiv() {
   `;
   document.querySelector('.container').prepend(errorDiv);
   return errorDiv;
+}
+
+// Update button progress bar and text
+function updateButtonProgress(button, progress, text) {
+  const clampedProgress = Math.max(0, Math.min(100, progress));
+  button.style.setProperty('--progress', `${clampedProgress}%`);
+  button.textContent = text;
 }
