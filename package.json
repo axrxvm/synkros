@@ -1,6 +1,6 @@
 {
   "name": "synkros",
-  "version": "1.4.5",
+  "version": "1.4.6",
   "description": "File Sharing with ease, No bullshit.",
   "main": "server.js",
   "scripts": {

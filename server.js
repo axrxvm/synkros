@@ -10,15 +10,47 @@ const crypto = require('crypto');
 
 const PORT = process.env.PORT || 3000;
 
+// --- Security & Middleware Setup ---
+const allowedOrigins = process.env.ALLOWED_CLIENTS
+  ? process.env.ALLOWED_CLIENTS.split(",").map(o => o.trim())
+  : [];
+
 const corsOptions = {
-  origin: process.env.ALLOWED_CLIENTS ? process.env.ALLOWED_CLIENTS.split(",") : [],
+  origin: function (origin, callback) {
+    if (!origin || allowedOrigins.includes(origin)) {
+      callback(null, true);
+    } else {
+      callback(new Error("Not allowed by CORS"));
+    }
+  },
+  credentials: true,
+  optionsSuccessStatus: 200
 };
+
 app.use(cors(corsOptions));
-app.disable('x-powered-by');
-app.use(helmet());
+app.disable("x-powered-by");
+
+// Harden HTTP headers
+app.use(helmet({
+  contentSecurityPolicy: false, // custom CSP defined manually below
+  crossOriginEmbedderPolicy: true,
+  crossOriginOpenerPolicy: { policy: "same-origin" },
+  crossOriginResourcePolicy: { policy: "same-origin" },
+  dnsPrefetchControl: { allow: false },
+  frameguard: { action: "deny" },
+  hsts: {
+    maxAge: 63072000, // 2 years
+    includeSubDomains: true,
+    preload: true
+  },
+  noSniff: true,
+  referrerPolicy: { policy: "no-referrer" },
+  xssFilter: true,
+  hidePoweredBy: true,
+}));
 app.use((req, res, next) => {
   try {
-    const nonce = crypto.randomBytes(16).toString('base64');
+    const nonce = crypto.randomBytes(16).toString("base64");
     res.locals.cspNonce = nonce;
 
     const directives = [
@@ -28,20 +60,49 @@ app.use((req, res, next) => {
       `img-src 'self' data:`,
       `connect-src 'self'`,
       `font-src 'self' data:`,
-      `object-src 'none'`
-    ].join('; ');
+      `object-src 'none'`,
+      `frame-ancestors 'none'`,
+      `base-uri 'self'`,
+      `form-action 'self'`
+    ].join("; ");
 
-    res.setHeader('Content-Security-Policy', directives);
-  } catch (e) {
-    // If nonce generation fails for any reason, fall back to a strict policy
-    res.setHeader('Content-Security-Policy', "default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; connect-src 'self'; font-src 'self' data:; object-src 'none'");
+    res.setHeader("Content-Security-Policy", directives);
+  } catch (err) {
+    console.error("CSP nonce generation failed:", err);
+    res.setHeader(
+      "Content-Security-Policy",
+      "default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; connect-src 'self'; font-src 'self' data:; object-src 'none'; frame-ancestors 'none'; base-uri 'self'; form-action 'self'"
+    );
   }
-
   next();
+});
+app.set('trust proxy', 1);
+app.use((req, res, next) => {
+  if (process.env.NODE_ENV !== 'production') return next();
+  const isSecure = req.secure || (req.headers['x-forwarded-proto'] || '').split(',')[0] === 'https';
+  if (isSecure) return next();
+  // Permanent redirect to https (preserve host & url)
+  const host = req.headers.host;
+  const target = `https://${host}${req.originalUrl}`;
+  return res.redirect(301, target);
 });
 
 app.use(express.json({ limit: '150kb' }));
-app.use(express.static("public"));
+app.use(express.static(path.join(__dirname, "public"), {
+  dotfiles: "ignore",
+  etag: true,
+  extensions: false,
+  index: false,
+  maxAge: "7d",
+  setHeaders: (res, path) => {
+    res.setHeader("Cache-Control", "public, max-age=604800, immutable");
+  }
+}));
+app.use((err, req, res, next) => {
+  console.error(err);
+  res.status(500).json({ error: "Internal server error" });
+});
+
 app.set("views", path.join(__dirname, "/views"));
 app.set("view engine", "ejs");
 
