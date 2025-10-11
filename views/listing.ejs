@@ -20,7 +20,7 @@
       <div id="content">
         <div class="card files-list">
           <header class="card-header">
-            <p class="card-header-title" style="padding-left: 0.5rem">
+            <p class="card-header-title no-left-padding">
               Uploaded Files (<%= locals.totalSize %>)
             </p>
             <a
@@ -48,7 +48,7 @@
               </span>
             </a>
           </header>
-          <table class="table is-fullwidth" style="margin-bottom: 0">
+          <table class="table is-fullwidth full-width-table">
             <thead>
               <tr>
                 <th>File Name</th>
@@ -111,5 +111,8 @@
       });
     </script>
     <script src="/js/security.js"></script>
+    <script nonce="<%= locals.cspNonce %>">
+      document.body.setAttribute('data-ray-id', '<%= rayId %>');
+    </script>
   </body>
 </html>

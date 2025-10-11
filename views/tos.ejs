@@ -49,33 +49,62 @@
 
     <main>
       <h1>Terms of Service</h1>
-      <p style="color: var(--text-color-muted);">Last Updated: October 2, 2025</p>
+      <p class="last-updated">Last Updated: October 11, 2025</p>
 
-      <h2>1. Introduction</h2>
-      <p>Welcome to Synkros ("we," "us"). Our service provides temporary, end-to-end encrypted file sharing. By using our service, you agree to these Terms of Service ("Terms") and our <a href="/privacy">Privacy Policy</a>. If you disagree with these terms, please do not use the service.</p>
+      <h2>1. Acceptance of Terms</h2>
+      <p>
+        Welcome to Synkros ("we," "us," or "our"). By accessing or using our file-sharing service (the "Service"), you agree to be bound by these Terms of Service ("Terms") and our <a href="/privacy">Privacy Policy</a>. If you do not agree to these Terms, you may not use the Service.
+      </p>
 
-      <h2>2. Your Responsibilities</h2>
-      <p>You are responsible for the content you upload and for complying with all applicable laws. You must not use Synkros for illegal activities, including but not limited to:</p>
+      <h2>2. Description of Service</h2>
+      <p>
+        Synkros provides a secure, end-to-end encrypted file-sharing service that allows users to upload files and share them with others. All files are automatically deleted from our servers after 24 hours. Our Service is not intended for long-term storage and should not be used as a backup solution.
+      </p>
+
+      <h2>3. User Conduct and Responsibilities</h2>
+      <p>You are solely responsible for the content you upload and share through the Service. You agree not to use the Service for any unlawful purpose or to engage in any of the following prohibited activities:</p>
       <ul>
-        <li>Distributing illegal content (CSAM, malware, pirated materials).</li>
-        <li>Harming, harassing, or threatening others.</li>
-        <li>Disrupting or attempting to compromise our service.</li>
+        <li>Distributing any content that is illegal, harmful, threatening, abusive, harassing, defamatory, or otherwise objectionable.</li>
+        <li>Uploading or sharing any material that infringes on the intellectual property rights of others, including copyrights, trademarks, and patents.</li>
+        <li>Distributing malware, viruses, or any other malicious code.</li>
+        <li>Attempting to gain unauthorized access to our systems or to disrupt the integrity or performance of the Service.</li>
+        <li>Using the Service to send unsolicited communications or spam.</li>
       </ul>
-      <p>We may remove content and block access for any user who violates these rules.</p>
+      <p>We reserve the right to remove any content and to block access for any user who violates these Terms.</p>
 
-      <h2>3. Intellectual Property</h2>
-      <p>You retain ownership of your uploaded content. We claim no rights to it. Our service, brand, and code are our property, protected by intellectual property laws. Our code is licensed under <a href="/license">CC BY-NC 4.0</a> for non-commercial use, but these Terms govern your use of our hosted service.</p>
+      <h2>4. Intellectual Property</h2>
+      <p>
+        You retain full ownership of the content you upload to the Service. We do not claim any intellectual property rights over your files. Our Service, including our brand, logo, and software, is our property and is protected by intellectual property laws.
+      </p>
 
-      <h2>4. Disclaimers and Liability</h2>
-      <p>THE SERVICE IS PROVIDED "AS IS" WITHOUT ANY WARRANTIES. WE DO NOT GUARANTEE IT WILL BE SECURE, UNINTERRUPTED, OR ERROR-FREE. TO THE FULLEST EXTENT PERMITTED BY LAW, WE ARE NOT LIABLE FOR ANY DAMAGES OR LOSSES RESULTING FROM YOUR USE OF THE SERVICE. YOU USE IT AT YOUR OWN RISK.</p>
+      <h2>5. Disclaimer of Warranties</h2>
+      <p>
+        THE SERVICE IS PROVIDED ON AN "AS IS" AND "AS AVAILABLE" BASIS, WITHOUT ANY WARRANTIES OF ANY KIND, EITHER EXPRESS OR IMPLIED. WE DO NOT WARRANT THAT THE SERVICE WILL BE UNINTERRUPTED, SECURE, OR ERROR-FREE. YOU USE THE SERVICE AT YOUR OWN RISK.
+      </p>
 
-      <h2>5. General Provisions</h2>
-      <p><strong>Termination:</strong> We reserve the right to terminate or suspend access to our service at any time, without notice, for any reason, including a breach of these Terms.</p>
-      <p><strong>Governing Law:</strong> These Terms are governed by the laws of the jurisdiction where our company is registered.</p>
-      <p><strong>Changes:</strong> We may update these Terms by posting a new version on this page. Your continued use of the service constitutes acceptance of the new terms.</p>
+      <h2>6. Limitation of Liability</h2>
+      <p>
+        TO THE FULLEST EXTENT PERMITTED BY LAW, IN NO EVENT SHALL WE BE LIABLE FOR ANY INDIRECT, INCIDENTAL, SPECIAL, CONSEQUENTIAL, OR PUNITIVE DAMAGES, OR ANY LOSS OF PROFITS OR REVENUES, WHETHER INCURRED DIRECTLY OR INDIRECTLY, OR ANY LOSS OF DATA, USE, GOODWILL, OR OTHER INTANGIBLE LOSSES, RESULTING FROM (A) YOUR USE OF THE SERVICE; (B) ANY UNAUTHORIZED ACCESS TO OR USE OF OUR SERVERS AND/OR ANY PERSONAL INFORMATION STORED THEREIN; OR (C) ANY BUGS, VIRUSES, OR OTHER MALICIOUS CODE THAT MAY BE TRANSMITTED TO OR THROUGH OUR SERVICE BY ANY THIRD PARTY.
+      </p>
 
-      <h2>6. Contact</h2>
-      <p>For legal inquiries or abuse reports, please contact us at <strong>axrxvm@gmail.com</strong>.</p>
+      <h2>7. Indemnification</h2>
+      <p>
+        You agree to indemnify and hold us harmless from any claims, damages, losses, liabilities, and expenses (including legal fees) arising out of your use of the Service, your violation of these Terms, or your violation of any rights of another.
+      </p>
+
+      <h2>8. General Provisions</h2>
+      <p>
+        <strong>Termination:</strong> We reserve the right to terminate or suspend your access to the Service at our sole discretion, without notice, for any reason, including for a breach of these Terms.
+      </p>
+      <p>
+        <strong>Governing Law:</strong> These Terms shall be governed by and construed in accordance with the laws of the jurisdiction in which our company is established, without regard to its conflict of law provisions.
+      </p>
+      <p>
+        <strong>Changes to Terms:</strong> We may modify these Terms from time to time. If we make material changes, we will provide notice through our Service or by other means. Your continued use of the Service after such changes constitutes your acceptance of the new Terms.
+      </p>
+
+      <h2>9. Contact Information</h2>
+      <p>If you have any questions about these Terms or wish to report a violation, please contact us at <strong>axrxvm@gmail.com</strong>.</p>
     </main>
 
     <footer class="footer">
@@ -88,5 +117,8 @@
       </div>
     </footer>
     <script src="/js/security.js"></script>
+    <script nonce="<%= locals.cspNonce %>">
+      document.body.setAttribute('data-ray-id', '<%= rayId %>');
+    </script>
   </body>
 </html>

@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Verify - Synkros</title>
+    <meta name="robots" content="noindex, nofollow" />
+    <link rel="apple-touch-icon" href="/apple-icon.png" />
+    <link rel="icon" type="image/png" href="/favicon.png" />
+    <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico" />
+    
+  <link rel="stylesheet" href="/css/style.min.css" />
+  <script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer nonce="<%= locals.cspNonce %>"></script>
+    
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      body {
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+        background-color: var(--bg-color);
+        color: #ffffff;
+        min-height: 100%;
+        display: flex;
+        flex-direction: column;
+        line-height: 1.6;
+        overflow-x: hidden;
+      }
+
+      .main-content {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        padding: 80px 40px 0 40px;
+        max-width: 680px;
+      }
+
+      .site-title {
+        font-size: 32px;
+        font-weight: 600;
+        margin-bottom: 8px;
+        color: #ffffff;
+        letter-spacing: -0.5px;
+      }
+
+      .status-text {
+        font-size: 22px;
+        font-weight: 300;
+        color: #aaa;
+        margin-bottom: 28px;
+      }
+
+
+
+      .message-text {
+        font-size: 16px;
+        color: #aaa;
+        line-height: 1.5;
+        margin: 28px 0 0 0;
+      }
+
+      .verify-section {
+        margin-bottom: 12px;
+      }
+
+      .turnstile-container {
+        margin-bottom: 16px;
+        width: fit-content;
+      }
+
+      .status-message {
+        font-size: 16px;
+        margin: 0;
+        display: none;
+      }
+
+      .status-message.show {
+        display: block;
+        margin-bottom: 20px;
+      }
+
+      .status-success {
+        color: #4c8bf4;
+      }
+
+      .status-error {
+        color: #ff6b6b;
+      }
+
+      .footer-section {
+        border-top: 1px solid #333333;
+        padding: 14px 24px;
+        margin-top: auto;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+
+      .ray-id {
+        font-size: 14px;
+        color: #888888;
+        font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+      }
+
+      .cloudflare-link {
+        font-size: 14px;
+        color: #888888;
+      }
+
+      .cloudflare-link a {
+        color: #4c8bf4;
+        text-decoration: none;
+      }
+
+      .cloudflare-link a:hover {
+        text-decoration: underline;
+      }
+
+      @media (max-width: 768px) {
+        .main-content {
+          padding: 80px 20px 0 20px;
+        }
+        
+        .footer-section {
+          flex-direction: column;
+          gap: 6px;
+          text-align: center;
+          padding: 12px 16px;
+        }
+        
+        .site-title {
+          font-size: 28px;
+        }
+        
+        .status-text {
+          font-size: 20px;
+        }
+        
+        .message-text {
+          font-size: 16px;
+        }
+
+        .navbar-container {
+          padding: 0 20px;
+        }
+      }
+    </style>
+  </head>
+
+  <body>
+    <main class="main-content">
+      <div class="site-title">Synkros</div>
+      <div class="status-text">Checking your browser before accessing Synkros</div>
+      
+      <div class="verify-section">
+        <div class="status-message" id="statusMessage"></div>
+        
+        <div class="turnstile-container">
+          <div class="cf-turnstile" 
+               data-sitekey="<%= siteKey %>" 
+               data-callback="onTurnstileSuccess"
+               data-error-callback="onTurnstileError"
+               data-theme="dark">
+          </div>
+        </div>
+      </div>
+      
+      <div class="message-text">
+        This process is automatic. Your browser will redirect to your requested content shortly.
+      </div>
+    </main>
+    <div class="footer-section">
+      <div class="ray-id">Ray ID: <%= rayId %></div>
+      <div class="cloudflare-link">Performance & security by <a href="/">Synkros</a></div>
+    </div>
+
+    <script nonce="<%= locals.cspNonce %>">
+      let verificationInProgress = false;
+      
+      function showStatus(message, isError = false) {
+        const statusEl = document.getElementById('statusMessage');
+        statusEl.textContent = message;
+        statusEl.className = `status-message show ${isError ? 'status-error' : 'status-success'}`;
+      }
+      
+      function hideStatus() {
+        const statusEl = document.getElementById('statusMessage');
+        statusEl.className = 'status-message';
+      }
+      
+      async function onTurnstileSuccess(token) {
+        if (verificationInProgress) return;
+        verificationInProgress = true;
+        
+        hideStatus();
+        
+        try {
+          const response = await fetch('/verify/api/verify', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ token })
+          });
+          
+          const result = await response.json();
+          
+          if (result.success) {
+            showStatus('Success! Redirecting...', false);
+            setTimeout(() => {
+              window.location.href = '/';
+            }, 1500);
+          } else {
+            showStatus('Verification failed. Please try again.', true);
+            verificationInProgress = false;
+          }
+        } catch (error) {
+          console.error('Verification error:', error);
+          showStatus('Connection error. Please try again.', true);
+          verificationInProgress = false;
+        }
+      }
+      
+      function onTurnstileError(error) {
+        console.error('Turnstile error:', error);
+        showStatus('Verification failed. Please refresh the page.', true);
+        verificationInProgress = false;
+      }
+      
+      // Auto-refresh if Turnstile fails to load after 15 seconds
+      setTimeout(() => {
+        if (!window.turnstile) {
+          showStatus('Loading verification... Please wait or refresh the page.', true);
+        }
+      }, 15000);
+    </script>
+    <script src="/js/security.js"></script>
+  </body>
+</html>

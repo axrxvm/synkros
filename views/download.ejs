@@ -221,8 +221,10 @@
   <% if(locals.isE2EE) {%>
   <script src="/js/e2ee.js"></script>
   <script src="/js/download.js"></script>
-  <% }%>
   <script src="/js/security.js"></script>
+  <script nonce="<%= locals.cspNonce %>">
+    document.body.setAttribute('data-ray-id', '<%= rayId %>');
+  </script>
+  <% }%>
 </body>
-
 </html>

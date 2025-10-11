@@ -40,6 +40,7 @@ router.get("/", async (req, res) => {
     totalSize: totalFilesSize,
     cLink: cleanUpLink,
     code: code,
+    rayId: req.rayId,
   });
 });
 

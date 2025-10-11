@@ -13,7 +13,8 @@
   function showWarning() {
     if (dismissed) return;
     try {
-      console.info('security: showing console warning');
+      const rayId = document.body.getAttribute('data-ray-id') || 'N/A';
+      console.log(`security: showing console warning (Ray ID: ${rayId})`);
       console.log('%c' + warnings[0], 'color: #b71c1c; font-size: 18px; font-weight: 700; background: #ffebee; padding: 8px; border-radius: 4px;');
       console.log('%cIf someone told you to copy/paste something here, it is a scammer trying to hijack your account or steal your files.', 'color: #880e4f; font-size: 13px;');
       console.log('%cSynkros will NEVER ask you to run code in the browser console.', 'color: #880e4f; font-size: 13px;');

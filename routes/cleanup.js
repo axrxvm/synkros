@@ -92,6 +92,7 @@ router.get("/", async (req, res) => {
   return res.render("cleanup", {
     message: result.message,
     totalFiles: result.totalFiles,
+    rayId: req.rayId,
   });
 });
 

@@ -815,6 +815,10 @@ strong {
   color: var(--text-color);
 }
 
+.card-header-title.no-left-padding {
+  padding-left: 0;
+}
+
 .card-footer {
   border-top: 1px solid var(--light-border-color);
 }
@@ -932,4 +936,24 @@ strong {
 html {
   scrollbar-width: thin; /* "auto" or "thin" */
   scrollbar-color: var(--text-color-muted) var(--card-color); /* thumb color track color */
+}
+
+.text-center {
+  text-align: center;
+}
+
+.opacity-6 {
+  opacity: 0.6;
+}
+
+.last-updated {
+  color: var(--text-color-muted);
+}
+
+.full-width-table {
+  margin-bottom: 0;
+}
+
+.transparent-bg {
+  background-color: transparent;
 }

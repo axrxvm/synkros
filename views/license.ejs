@@ -93,5 +93,8 @@
       </div>
     </footer>
     <script src="/js/security.js"></script>
+    <script nonce="<%= locals.cspNonce %>">
+      document.body.setAttribute('data-ray-id', '<%= rayId %>');
+    </script>
   </body>
 </html>

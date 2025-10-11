@@ -14,9 +14,9 @@
   <body>
     <div class="block-message">
       <h4>Clean Up Done!</h4>
-      <p style="text-align: center">
+      <p class="text-center">
         <%=locals.message %> <% if(locals.totalFiles == 0) { %>
-        <br /><br /><small style="opacity: 0.6"
+        <br /><br /><small class="opacity-6"
           >Only files uploaded more that 24 hours ago can be cleaned. The files uploaded are auto-deleted after 24 hours.</small
         >
         <% } %>
@@ -31,5 +31,8 @@
       });
     </script>
     <script src="/js/security.js"></script>
+    <script nonce="<%= locals.cspNonce %>">
+      document.body.setAttribute('data-ray-id', '<%= rayId %>');
+    </script>
   </body>
 </html>

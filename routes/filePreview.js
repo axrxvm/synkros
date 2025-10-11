@@ -7,6 +7,7 @@ router.get("/:fileId", async (req, res) => {
     if (!file) {
       return res.render("download", {
         error: "Incorrect file link",
+        rayId: req.rayId,
       });
     }
     // Calculate remaining time until expiry
@@ -24,10 +25,12 @@ router.get("/:fileId", async (req, res) => {
       downloadLink: `https://synkross.alwaysdata.net/files/download/${file.uuid}`,
       isE2EE: true,
       msRemaining,
+      rayId: req.rayId,
     });
   } catch (error) {
     return res.render("download", {
       error: "Something went wrong",
+      rayId: req.rayId,
     });
   }
 });
