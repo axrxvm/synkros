@@ -30,7 +30,7 @@
         els.forEach(el => el.addEventListener('click', () => { window.location.href = '/'; }));
       });
     </script>
-    <script src="/js/security.js"></script>
+    <script src="/js/security.js" nonce="<%= locals.cspNonce %>"></script>
     <script nonce="<%= locals.cspNonce %>">
       document.body.setAttribute('data-ray-id', '<%= rayId %>');
     </script>

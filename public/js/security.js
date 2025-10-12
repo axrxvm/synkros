@@ -26,8 +26,13 @@
 
   // allow users to dismiss the warning explicitly from console
 
-  // Show once on page load (non-spammy)
-  showWarning();
+  // Show once on page load (non-spammy) - wait for DOM ready to ensure data-ray-id is set
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', showWarning);
+  } else {
+    // DOM is already ready, but let's give a small delay to ensure inline scripts have run
+    setTimeout(showWarning, 100);
+  }
 
   // Detect devtools open using a harmless trick (measuring toString override)
   const devtoolsDetector = {

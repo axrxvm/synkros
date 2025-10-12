@@ -23,10 +23,12 @@ if (process.env.NODE_ENV === 'development') {
 
 const corsOptions = {
   origin: function (origin, callback) {
-    if (!origin && process.env.NODE_ENV === 'development') {
+    // Allow same-origin requests (when origin is undefined/null)
+    if (!origin) {
       return callback(null, true);
     }
-    if (!origin || allowedOrigins.includes(origin)) {
+    // Allow requests from allowed origins
+    if (allowedOrigins.length === 0 || allowedOrigins.includes(origin)) {
       callback(null, true);
     } else {
       callback(new Error("Not allowed by CORS"));

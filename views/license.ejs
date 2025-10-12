@@ -92,7 +92,7 @@
         <a href="/report" class="footer-link">Report Abuse</a>
       </div>
     </footer>
-    <script src="/js/security.js"></script>
+    <script src="/js/security.js" nonce="<%= locals.cspNonce %>"></script>
     <script nonce="<%= locals.cspNonce %>">
       document.body.setAttribute('data-ray-id', '<%= rayId %>');
     </script>
