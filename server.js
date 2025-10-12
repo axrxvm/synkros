@@ -76,6 +76,7 @@ app.use((req, res, next) => {
       `img-src 'self' data:`,
       `connect-src 'self' https://challenges.cloudflare.com`,
       `font-src 'self' data:`,
+      `worker-src 'self' blob:`,
       `object-src 'none'`,
       `frame-src https://challenges.cloudflare.com`,
       `frame-ancestors 'none'`,
