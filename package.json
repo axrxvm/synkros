@@ -7,11 +7,8 @@
     "start": "node server.js",
     "dev": "nodemon server.js"
   },
-  "author": {
-    "name": "Aarav Mehta",
-    "url": "https://itzaarav.netlify.app"
-  },
-  "license": "MIT",
+  "author": "Aarav Mehta (https://itzaarav.netlify.app)",
+  "license": "CC-BY-NC-4.0",
   "dependencies": {
     "cors": "2.8.5",
     "crypto": "1.0.1",
@@ -32,5 +29,27 @@
   },
   "devDependencies": {
     "nodemon": "3.1.0"
-  }
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/axrxvm/synkros.git"
+  },
+  "keywords": [
+    "no-bs",
+    "file-sharing",
+    "ui",
+    "ejs",
+    "expressjs",
+    "nodejs",
+    "axrxvm",
+    "synkros",
+    "synkross",
+    "e2ee",
+    "e2ee-client",
+    "e2ee-worker"
+  ],
+  "bugs": {
+    "url": "https://github.com/axrxvm/synkros/issues"
+  },
+  "homepage": "https://github.com/axrxvm/synkros#readme"
 }
