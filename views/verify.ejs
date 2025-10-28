@@ -180,6 +180,7 @@
 
     <script nonce="<%= locals.cspNonce %>">
       let verificationInProgress = false;
+      const redirectUrl = '<%= redirect %>';
       
       function showStatus(message, isError = false) {
         const statusEl = document.getElementById('statusMessage');
@@ -212,7 +213,7 @@
           if (result.success) {
             showStatus('Success! Redirecting...', false);
             setTimeout(() => {
-              window.location.href = '/';
+              window.location.href = redirectUrl;
             }, 1500);
           } else {
             showStatus('Verification failed. Please try again.', true);

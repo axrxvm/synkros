@@ -3,11 +3,107 @@ const router = require("express").Router();
 // const File = require("../models/file");
 const { getAllFileMetadata, deleteFileMetadata } = require("../models/file");
 const fs = require("fs");
+const path = require("path");
 
 const constants = require("../constants/file-constants");
 
 // connectDB(); // No longer needed
 
+/**
+ * Cleanup orphaned files in /uploads that have no corresponding metadata in /data
+ */
+async function cleanupOrphanedFiles() {
+  let orphanedFilesCount = 0;
+  let deletedOrphanedFiles = 0;
+
+  try {
+    const uploadsDir = path.join(process.cwd(), 'uploads');
+    
+    // Check if uploads directory exists
+    if (!fs.existsSync(uploadsDir)) {
+      console.log("Uploads directory does not exist.");
+      return {
+        message: "Uploads directory does not exist.",
+        orphanedFilesCount: 0,
+        deletedOrphanedFiles: 0,
+      };
+    }
+
+    // Get all files in uploads directory (excluding .gitkeep)
+    const uploadedFiles = fs.readdirSync(uploadsDir).filter(file => {
+      const filePath = path.join(uploadsDir, file);
+      return fs.statSync(filePath).isFile() && file !== '.gitkeep';
+    });
+
+    if (uploadedFiles.length === 0) {
+      console.log("No files found in uploads directory.");
+      return {
+        message: "No files found in uploads directory.",
+        orphanedFilesCount: 0,
+        deletedOrphanedFiles: 0,
+      };
+    }
+
+    // Get all metadata files
+    const allMetadata = await getAllFileMetadata();
+    
+    // Create a Set of all referenced file paths for quick lookup
+    const referencedPaths = new Set();
+    allMetadata.forEach(metadata => {
+      if (metadata.path) {
+        // Normalize the path to handle both relative and absolute paths
+        const normalizedPath = metadata.path.replace(/\\/g, '/');
+        const fileName = normalizedPath.split('/').pop();
+        referencedPaths.add(fileName);
+      }
+    });
+
+    console.log(`Found ${uploadedFiles.length} files in uploads directory and ${referencedPaths.size} referenced files in metadata.`);
+
+    // Find orphaned files
+    const orphanedFiles = uploadedFiles.filter(file => !referencedPaths.has(file));
+    orphanedFilesCount = orphanedFiles.length;
+
+    if (orphanedFilesCount > 0) {
+      console.log(`Starting cleanup of ${orphanedFilesCount} orphaned files...`);
+      
+      for (const file of orphanedFiles) {
+        try {
+          const filePath = path.join(uploadsDir, file);
+          fs.unlinkSync(filePath);
+          console.log(`Successfully deleted orphaned file: ${file}`);
+          deletedOrphanedFiles++;
+        } catch (err) {
+          console.error(`Error deleting orphaned file ${file}:`, err);
+        }
+      }
+
+      console.log(`Orphaned files cleanup completed: ${deletedOrphanedFiles} of ${orphanedFilesCount} files deleted.`);
+    } else {
+      console.log("No orphaned files found.");
+    }
+  } catch (error) {
+    console.error("Error during orphaned files cleanup:", error);
+    return {
+      message: "An error occurred during the orphaned files cleanup process. Check server logs.",
+      orphanedFilesCount: 0,
+      deletedOrphanedFiles: 0,
+    };
+  }
+
+  let message;
+  if (orphanedFilesCount > 0) {
+    message = `${deletedOrphanedFiles} of ${orphanedFilesCount} orphaned file(s) have been deleted.`;
+  } else {
+    message = "No orphaned files found.";
+  }
+
+  return {
+    message,
+    orphanedFilesCount,
+    deletedOrphanedFiles,
+  };
+}
 
 async function cleanupExpiredFiles() {
   let totalOldFiles = 0;
@@ -88,15 +184,23 @@ async function cleanupExpiredFiles() {
 }
 
 router.get("/", async (req, res) => {
-  const result = await cleanupExpiredFiles();
+  // Run both cleanup operations
+  const expiredResult = await cleanupExpiredFiles();
+  const orphanedResult = await cleanupOrphanedFiles();
+  
+  // Combine results for display
+  const combinedMessage = `${expiredResult.message}\n${orphanedResult.message}`;
+  
   return res.render("cleanup", {
-    message: result.message,
-    totalFiles: result.totalFiles,
+    message: combinedMessage,
+    totalFiles: expiredResult.totalFiles,
+    orphanedFiles: orphanedResult.orphanedFilesCount,
     rayId: req.rayId,
   });
 });
 
 module.exports = router;
 module.exports.cleanupExpiredFiles = cleanupExpiredFiles;
+module.exports.cleanupOrphanedFiles = cleanupOrphanedFiles;
 
 module.exports = router;

@@ -155,12 +155,14 @@ const server = app.listen(PORT, () => {
 });
 
 // Cleanup logic
-const { cleanupExpiredFiles } = require('./routes/cleanup');
+const { cleanupExpiredFiles, cleanupOrphanedFiles } = require('./routes/cleanup');
 (async () => {
   console.log("Running startup cleanup");
   await cleanupExpiredFiles();
+  await cleanupOrphanedFiles();
 })();
 cron.schedule("0 */3 * * *", async () => {
   console.log("Running scheduled cleanup (every 3 hours)");
   await cleanupExpiredFiles();
+  await cleanupOrphanedFiles();
 });

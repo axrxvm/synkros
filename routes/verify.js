@@ -27,13 +27,16 @@ const checkVerification = (req, res, next) => {
     return next();
   }
   
-  return res.redirect('/verify');
+  // Redirect to verify with the original URL as a parameter
+  const redirectUrl = encodeURIComponent(req.originalUrl);
+  return res.redirect(`/verify?redirect=${redirectUrl}`);
 };
 
 // GET /verify - Show verification page
 router.get("/", (req, res) => {
   const siteKey = process.env.TURNSTILE_SITE_KEY;
-  return res.render("verify", { siteKey, rayId: req.rayId });
+  const redirect = req.query.redirect || '/';
+  return res.render("verify", { siteKey, rayId: req.rayId, redirect });
 });
 
 // POST /api/verify - Verify Turnstile token
