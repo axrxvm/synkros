@@ -24,7 +24,7 @@ const checkVerification = (req, res, next) => {
   }
   
   // Skip verification for certain routes
-  const skipRoutes = ['/verify', '/api/verify', '/css/', '/js/', '/img/', '/favicon', "/api/system"];
+  const skipRoutes = ['/verify', '/api/verify', '/css/', '/js/', '/img/', '/favicon', "/api/system", "/api/status"];
   if (skipRoutes.some(route => req.path.startsWith(route))) {
     return next();
   }

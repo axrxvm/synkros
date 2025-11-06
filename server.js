@@ -136,6 +136,7 @@ app.use("/api/files", require("./routes/files"));
 app.use("/files", require("./routes/filePreview"));
 app.use("/files/download", require("./routes/download"));
 app.use("/api/system", require("./routes/system"));
+app.use("/api/status", require("./routes/status"));
 app.get('/privacy', (req, res) => { res.render('privacy', { rayId: req.rayId }); });
 app.get('/tos', (req, res) => { res.render('tos', { rayId: req.rayId }); });
 app.get("/report", (req, res) => { res.render("abuse", { rayId: req.rayId }); });
