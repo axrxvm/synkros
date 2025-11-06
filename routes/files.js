@@ -42,20 +42,23 @@ router.post("/", (req, res) => {
   upload(req, res, async (err) => {
     // Handle multer errors first
     if (err) {
-      console.error("Multer error:", err);
+      console.error(`[${req.rayId}] Multer error:`, err);
       if (err.code === 'LIMIT_FILE_SIZE') {
         return res.status(400).json({
-          error: "File too large. Maximum size allowed is " + (constants.maxAllowedFileSize / (1024 * 1024)) + "MB"
+          error: "File too large. Maximum size allowed is " + (constants.maxAllowedFileSize / (1024 * 1024)) + "MB",
+          rayId: req.rayId
         });
       }
       return res.status(500).json({
         error: "Upload failed: " + err.message,
+        rayId: req.rayId
       });
     }
 
     if (!req.file) {
       return res.status(400).json({
         error: "No file uploaded. Please select a file to upload.",
+        rayId: req.rayId
       });
     }
 
@@ -68,7 +71,8 @@ router.post("/", (req, res) => {
       uuid: uuid4(),
       path: req.file.path,
       size: req.file.size,
-      originalName: req.body.originalName || req.file.originalname
+      originalName: req.body.originalName || req.file.originalname,
+      uploadRayId: req.rayId // Store RayID for debugging upload issues
     };
 
     let savedFile;
@@ -78,29 +82,34 @@ router.post("/", (req, res) => {
         throw new Error("saveFileMetadata returned null");
       }
     } catch (metadataError) {
-      console.error("Metadata save error:", metadataError.message);
+      console.error(`[${req.rayId}] Metadata save error:`, metadataError.message);
 
       // Clean up uploaded file if metadata save fails
       if (req.file?.path && fs.existsSync(req.file.path)) {
         try {
           fs.unlinkSync(req.file.path);
         } catch (unlinkErr) {
-          console.error("Error deleting file after metadata save failure:", unlinkErr.message);
+          console.error(`[${req.rayId}] Error deleting file after metadata save failure:`, unlinkErr.message);
         }
       }
 
       return res.status(500).json({
-        error: "Failed to save file information. Please try again."
+        error: "Failed to save file information. Please try again.",
+        rayId: req.rayId
       });
     }
 
     // Include encryption key in URL fragment (not sent to server)
     const fileUrl = `https://synkross.alwaysdata.net/files/${savedFile.uuid}#${encryptionKey}`;
     qr.toDataURL(fileUrl, (err, src) => {
+      if (err) {
+        console.error(`[${req.rayId}] QR code generation error:`, err);
+      }
       return res.status(200).json({
         file: fileUrl,
         qr: err ? null : src,
-        encryptionKey: encryptionKey // Also return key separately for client use
+        encryptionKey: encryptionKey, // Also return key separately for client use
+        rayId: req.rayId
       });
     });
   });
@@ -112,6 +121,7 @@ router.post("/sendmail", async (req, res) => {
   if (!uuid || !sender || !recipient) {
     return res.status(400).send({
       error: "Missing required fields",
+      rayId: req.rayId
     });
   }
 
@@ -119,7 +129,11 @@ router.post("/sendmail", async (req, res) => {
     const file = await getFileMetadata(uuid);
 
     if (!file) {
-      return res.status(404).send({ error: "File not found." });
+      console.error(`[${req.rayId}] File not found for sendmail: ${uuid}`);
+      return res.status(404).send({ 
+        error: "File not found.",
+        rayId: req.rayId
+      });
     }
 
     // Ensure recipients is an array, even if it's not present in the JSON
@@ -134,6 +148,7 @@ router.post("/sendmail", async (req, res) => {
       if (file.recipients.includes(recipient)) {
         return res.status(422).send({
           error: `Email already sent to ${recipient}.`,
+          rayId: req.rayId
         });
       } else {
         file.recipients.push(recipient);
@@ -144,8 +159,10 @@ router.post("/sendmail", async (req, res) => {
 
     if (!updatedFile) {
       // This could happen if the file was deleted between getFileMetadata and updateFileMetadata
+      console.error(`[${req.rayId}] Failed to update file metadata for ${uuid}`);
       return res.status(500).json({
-        error: "Failed to update file metadata. File might have been deleted."
+        error: "Failed to update file metadata. File might have been deleted.",
+        rayId: req.rayId
       });
     }
 
@@ -171,20 +188,24 @@ router.post("/sendmail", async (req, res) => {
       }),
     })
       .then(() => {
+        console.log(`[${req.rayId}] Email sent successfully from ${sender} to ${recipient} for file ${uuid}`);
         return res.json({
           success: true,
+          rayId: req.rayId
         });
       })
       .catch((err) => {
-        console.log(err);
+        console.error(`[${req.rayId}] Error in email sending:`, err);
         return res.status(500).json({
           error: "Error in email sending.",
+          rayId: req.rayId
         });
       });
   } catch (err) {
-    console.log(err);
+    console.error(`[${req.rayId}] Sendmail error:`, err);
     return res.status(500).send({
       error: "Something went wrong.",
+      rayId: req.rayId
     });
   }
 });

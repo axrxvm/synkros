@@ -21,13 +21,18 @@ Whether you’re sending a project build, a resume, or a dumb meme—Synkros mak
 |--------|-------------|
 | ⏲️ **Auto-Delete After 24 Hours** | Files are automatically removed after 24h to keep things clean and temporary. |
 | 🔐 **End-to-End Encrypted Storage** | Files are encrypted client-side (AES-256-GCM) before upload—**not even the server can read them**. |
-| 📱 **QR Code for Each File** | Instantly generate a scannable QR code for every upload—perfect for sharing across devices. |
+| � **Web Worker Encryption** | Utilizes Web Workers for non-blocking encryption/decryption with real-time progress tracking. |
+| �📱 **QR Code for Each File** | Instantly generate a scannable QR code for every upload—perfect for sharing across devices. |
 | ✉️ **Email Link to Recipient** | Enter an email, and Synkros will mail the file link directly—no hassle. |
+| 🤖 **Bot Protection** | Cloudflare Turnstile verification prevents automated abuse while maintaining privacy. |
 | 🧼 **Minimalist UI** | Designed to be dead simple. Drag. Drop. Done. |
 | 🌐 **24/7 Uptime** | Always available, whether you're working at 3PM or 3AM. |
 | 💸 **Free for Life** | No subscriptions, no upsells. Ever. |
 | 🧩 **All File Types Supported** | Upload anything from docs and zips to videos, images, and code. |
-| 🧍 **No Accounts Needed** | Truly anonymous uploads. We don’t want your email. We don’t even ask. |
+| 🧍 **No Accounts Needed** | Truly anonymous uploads. We don't want your email. We don't even ask. |
+| 🛡️ **Privacy-First Philosophy** | No cookies. No analytics. No user tracking. Just files. |
+| 📱 **Mobile + Desktop Optimized** | Seamless experience across all devices and screen sizes. |
+| 🔒 **Security Hardened** | Helmet.js, CSP with nonces, CORS protection, rate limiting, and HTTPS enforcement. |
 | 🛡️ **Privacy-First Philosophy** | No cookies. No analytics. No user tracking. Just files. |
 | 📱 **Mobile + Desktop Optimized** | Seamless experience across all devices and screen sizes. |
 
@@ -51,6 +56,9 @@ Whether you’re sending a project build, a resume, or a dumb meme—Synkros mak
 Synkros implements **true end-to-end encryption** using **AES-256-GCM encryption**:
 
 - **Client-Side Encryption**: Files are encrypted in your browser before upload using the Web Crypto API
+- **Web Worker Architecture**: Heavy encryption operations run in dedicated Web Workers for non-blocking performance
+- **Progress Tracking**: Real-time encryption/decryption progress with visual feedback
+- **Memory Optimization**: Smart chunk-based processing handles large files (up to 500MB) efficiently
 - **Unique Keys**: Each file gets its own randomly generated 256-bit encryption key
 - **Key in URL Fragment**: The encryption key is embedded in the download URL fragment (`#key`) and never sent to the server
 - **Server-Side Blind**: The server stores only encrypted data and cannot decrypt files without the key
@@ -62,8 +70,19 @@ Synkros implements **true end-to-end encryption** using **AES-256-GCM encryption
 - **Server cannot decrypt files** — even with full server access, files remain encrypted
 - **No cookies, no analytics, no logs** (minimal access/error logs for maintenance only)
 - **Auto-deletion** of all uploads after 24 hours
+- **Bot Protection**: Cloudflare Turnstile verification without compromising privacy (IP addresses not logged)
 - Built with a **true zero-knowledge approach**:
   > If someone asks us what you uploaded, we literally couldn't tell them even if we wanted to.
+
+### Security & Privacy Features
+
+- **Helmet.js Integration**: Comprehensive HTTP security headers
+- **Content Security Policy (CSP)**: Dynamic nonce-based CSP to prevent XSS attacks
+- **CORS Protection**: Configurable allowed origins for API access
+- **Rate Limiting**: 100 requests per 15 minutes per IP to prevent abuse
+- **HTTPS Enforcement**: Automatic redirect to secure connections in production
+- **Secure Headers**: HSTS, X-Frame-Options (DENY), referrer policy (no-referrer), and more
+- **Request Isolation**: Unique Ray ID per request for debugging without user tracking
 
 ---
 
@@ -77,41 +96,140 @@ For self-hosting or development, this application requires certain environment v
     ```
 
 2.  **Set Essential Variables**: Open your `.env` file and configure the following:
-    *   `MONGODB_CONNECTION_URL`: Your MongoDB connection string.
-    *   `APP_BASE_URL`: The base URL of your application (e.g., `http://localhost:3000`).
-    *   `PORT`: The port the application should run on (e.g., `3000`).
+    *   `NODE_ENV`: Set to `development` or `production`
+    *   `PORT`: The port the application should run on (e.g., `3000`)
+    *   `APP_BASE_URL`: The base URL of your application (e.g., `http://localhost:3000`)
+    *   `ALLOWED_CLIENTS`: Comma-separated list of client URLs allowed to access the API (CORS)
+    *   `SMTP_HOST`, `SMTP_PORT`, `MAIL_USER`, `MAIL_PASSWORD`: For email sending functionality
+    *   `TURNSTILE_SITE_KEY`, `TURNSTILE_SECRET_KEY`: Cloudflare Turnstile credentials for bot protection
+    *   `CLEANUP_CODE`: A secret code for triggering the cleanup job manually via an API endpoint
     *   ~~`KEY`: No longer needed - E2EE encryption keys are generated client-side~~
-    *   `SMTP_HOST`, `SMTP_PORT`, `MAIL_USER`, `MAIL_PASSWORD`: For email sending functionality.
-    *   `CLEANUP_CODE`: A secret code for triggering the cleanup job manually via an API endpoint if needed.
-    *   `ALLOWED_CLIENTS`: Comma-separated list of client URLs allowed to access the API (CORS).
+    *   ~~`MONGODB_CONNECTION_URL`: Not currently used - files stored locally~~
 
 **Important**: Keep your `.env` file secure and out of version control. The `.gitignore` file should already be configured to ignore `.env`.
 
 ---
 
+## 🛠️ Tech Stack
+
+**Backend:**
+- Node.js + Express.js
+- EJS templating engine
+- Multer for file uploads
+- Nodemailer for email delivery
+- Node-cron for scheduled cleanup tasks
+- Winston for logging
+- Helmet.js for security headers
+
+**Frontend:**
+- Vanilla JavaScript (no framework bloat)
+- Web Crypto API for encryption
+- Web Workers for performance
+- QRCode.js for QR generation
+
+**Security:**
+- AES-256-GCM encryption
+- Cloudflare Turnstile bot protection
+- Content Security Policy (CSP)
+- CORS & rate limiting
+- HTTPS enforcement
+
+---
+
 ## 🚀 Getting Started (Self-Hosting / Development)
 
-1.  **Clone the repository:**
-    ```bash
-    git clone https://github.com/axrxvm/synkros.git 
-    cd synkros
-    ```
-2.  **Install dependencies:**
-    ```bash
-    npm install
-    ```
-3.  **Configure Environment:**
-    Create and configure your `.env` file as described in the "Environment Configuration" section above. Note: The `KEY` variable is no longer needed as encryption is handled client-side.
-4.  **Run the application:**
-    *   For development with auto-reloading:
-        ```bash
-        npm run dev
-        ```
-    *   For production:
-        ```bash
-        npm start
-        ```
-    The server should now be running on the `PORT` specified in your `.env` file.
+### Prerequisites
+
+- Node.js (v16 or higher recommended)
+- npm or yarn package manager
+- A Cloudflare Turnstile account (for bot protection)
+- SMTP server credentials (for email functionality)
+
+### Installation
+
+1. **Clone the repository:**
+   ```bash
+   git clone https://github.com/axrxvm/synkros.git 
+   cd synkros
+   ```
+
+2. **Install dependencies:**
+   ```bash
+   npm install
+   ```
+
+3. **Configure Environment Variables:**
+   
+   Copy the example environment file:
+   ```bash
+   cp .env.example .env
+   ```
+   
+   Edit `.env` and configure the following required variables:
+   
+   ```bash
+   # Server Configuration
+   NODE_ENV=development          # or 'production'
+   PORT=3000
+   
+   # Application
+   APP_BASE_URL=http://localhost:3000
+   
+   # Security & CORS (comma-separated URLs, leave empty for development)
+   ALLOWED_CLIENTS=
+   
+   # Email Configuration (required for file sharing via email)
+   SMTP_HOST=smtp.your-provider.com
+   SMTP_PORT=465
+   MAIL_USER=your-email@example.com
+   MAIL_PASSWORD=your-password
+   
+   # Cloudflare Turnstile (required for bot protection)
+   TURNSTILE_SITE_KEY=your-site-key
+   TURNSTILE_SECRET_KEY=your-secret-key
+   
+   # Cleanup
+   CLEANUP_CODE=your-secret-cleanup-code
+   ```
+
+4. **Create required directories:**
+   
+   The application will auto-create these on first run, but you can create them manually:
+   ```bash
+   mkdir uploads
+   ```
+
+5. **Run the application:**
+   
+   For development with auto-reload:
+   ```bash
+   npm run dev
+   ```
+   
+   For production:
+   ```bash
+   npm start
+   ```
+
+6. **Access the application:**
+   
+   Open your browser and navigate to:
+   ```
+   http://localhost:3000
+   ```
+
+### Features on First Run
+
+- **Automatic cleanup job**: Runs on startup to remove expired files
+- **Scheduled cleanup**: Automatically runs every 3 hours to clean up files older than 24 hours
+- **Security headers**: Helmet.js automatically applies security headers
+- **HTTPS redirect**: Enabled in production mode
+
+### Notes
+
+- Files are stored locally in the `uploads/` directory
+- Encryption is handled entirely client-side; no server-side key management needed
+- Each file is automatically deleted after 24 hours
 
 ---
 
@@ -131,8 +249,8 @@ If you have ideas or feature requests, open an issue or start a discussion.
 
 ## 🧾 License
 
-**MIT License** – Free for personal or commercial use.  
-Just don’t pretend you built it.
+**CC-BY-NC-4.0 License** – Free for personal and non-commercial use.  
+Just don't pretend you built it.
 
 ---
 

@@ -52,74 +52,290 @@
 
     <main>
       <h1>Privacy Policy</h1>
-      <p class="last-updated">Last Updated: October 11, 2025</p>
+      <p class="last-updated">Last Updated: November 6, 2025</p>
 
-      <h2>1. Introduction</h2>
+      <h2>1. Our Commitment to Privacy</h2>
       <p>
-        Welcome to Synkros ("we," "us," or "our"). We are committed to protecting your privacy. This Privacy Policy explains how we collect, use, disclose, and safeguard your information when you use our file-sharing service (the "Service"). By using the Service, you agree to the collection and use of information in accordance with this policy.
+        At Synkros, we believe privacy is a fundamental right. We have designed our service from the ground up with a <strong>zero-knowledge architecture</strong>, meaning we cannot access, read, or share your files even if compelled to do so. This Privacy Policy explains in detail what information we collect, how we handle it, and—more importantly—what we <em>don't</em> collect.
       </p>
 
-      <h2>2. Information We Collect</h2>
-      <p>We collect the following types of information to provide and improve our Service:</p>
+      <h2>2. Our Zero-Knowledge Principles</h2>
+      <p>Synkros operates on the following core privacy principles:</p>
       <ul>
-        <li>
-          <strong>File Content:</strong> The files you upload. For end-to-end encrypted files, we only store the encrypted data and do not have the ability to decrypt it. The decryption key is stored on the client-side and is never transferred to the server.
-        </li>
-        <li>
-          <strong>File Metadata:</strong> This includes the original filename, file size, and timestamps related to creation and modification. This information is necessary to manage the file and display its details to the recipient.
-        </li>
-        <li>
-          <strong>Contact Information:</strong> If you use our email sharing feature, we collect and store the sender's and recipient's email addresses to facilitate the delivery of the share link.
-        </li>
-        <li>
-          <strong>Usage Data:</strong> We automatically collect your IP address for rate-limiting and security purposes to prevent abuse of our Service. We also collect information about your browser type and the pages you visit on our Service for analytics and to improve the user experience.
-        </li>
+        <li><strong>No User Tracking:</strong> We do not track who you are, where you're from, or what you do on our platform.</li>
+        <li><strong>No User Accounts:</strong> We don't require registration, usernames, passwords, or any form of account creation.</li>
+        <li><strong>End-to-End Encryption:</strong> All file encryption and decryption happens in your browser—we never see your decryption keys.</li>
+        <li><strong>Automatic Deletion:</strong> All data is permanently destroyed within 24 hours, no exceptions.</li>
+        <li><strong>Minimal Data Collection:</strong> We only collect what is absolutely necessary to provide the service.</li>
+        <li><strong>No Third-Party Analytics:</strong> We don't use Google Analytics, Facebook Pixel, or any third-party tracking services.</li>
       </ul>
 
-      <h2>3. How We Use Your Information</h2>
-      <p>We use the information we collect for the following purposes:</p>
+      <h2>3. Information We Collect and Process</h2>
+      
+      <h3>3.1. File Data</h3>
+      <p><strong>What We Store:</strong></p>
       <ul>
-        <li>To provide, operate, and maintain our Service.</li>
-        <li>To process and manage file uploads and downloads.</li>
-        <li>To facilitate the sharing of files via email at your request.</li>
-        <li>To monitor and analyze usage to improve the Service's functionality and user experience.</li>
-        <li>To prevent abuse, enforce our Terms of Service, and protect the security and integrity of our platform.</li>
-        <li>To comply with legal obligations.</li>
+        <li><strong>Encrypted File Content:</strong> When you upload a file, it is encrypted in your browser using AES-256-GCM encryption before being transmitted to our servers. We store only the encrypted blob. The encryption key never leaves your device and is never sent to our servers—it's embedded in the download URL fragment (the part after the # symbol), which browsers don't send to servers.</li>
+        <li><strong>File Metadata:</strong> Original filename, file size, upload timestamp, and a randomly generated UUID (universal unique identifier) for the file.</li>
+      </ul>
+      <p><strong>What We Cannot Do:</strong></p>
+      <ul>
+        <li>We cannot decrypt, read, or access the contents of your files.</li>
+        <li>We cannot see what type of file you uploaded beyond its encrypted form.</li>
+        <li>We cannot recover files after they are deleted.</li>
+      </ul>
+      <p><strong>Retention Period:</strong> All file data and metadata are automatically and permanently deleted exactly 24 hours after upload. This process is automated and irreversible.</p>
+
+      <h3>3.2. Email Addresses (Optional Feature)</h3>
+      <p><strong>What We Collect:</strong></p>
+      <ul>
+        <li>If you choose to use our email sharing feature, we temporarily store the sender's and recipient's email addresses to send the share notification.</li>
+        <li>Email addresses are stored in plain text in the file's metadata alongside other file information.</li>
+      </ul>
+      <p><strong>How We Use It:</strong></p>
+      <ul>
+        <li>Email addresses are used solely to send the file sharing notification via our own email service provider.</li>
+      </ul>
+      <p><strong>Retention Period:</strong> Email addresses are deleted along with all other file metadata after 24 hours.</p>
+      <p><strong>Note:</strong> Email sharing is entirely optional. You can share files via direct link without providing any email addresses.</p>
+
+      <h3>3.3. Ray ID (Debugging Identifier)</h3>
+      <p><strong>What It Is:</strong></p>
+      <ul>
+        <li>A Ray ID is a randomly generated UUID created for each HTTP request you make to our service.</li>
+        <li>Example: <code>7f3e9c2a-4b8d-4e5f-9a1c-2d3e4f5a6b7c</code></li>
+      </ul>
+      <p><strong>Purpose:</strong></p>
+      <ul>
+        <li>Ray IDs are used exclusively for debugging and technical troubleshooting.</li>
+        <li>When errors occur, the Ray ID helps our technical team trace the request through server logs to identify and fix issues.</li>
+        <li>If you contact support about a technical problem, we may ask you to provide the Ray ID displayed on your error page.</li>
+      </ul>
+      <p><strong>Privacy Guarantees:</strong></p>
+      <ul>
+        <li>Ray IDs are generated fresh for each request—they are not session-based or user-based.</li>
+        <li>Ray IDs cannot be used to identify you or link multiple requests to the same user.</li>
+        <li>Ray IDs are not connected to your IP address, browser fingerprint, or any identifying information.</li>
+        <li>Ray IDs are stored only in temporary server logs and are deleted within 24 hours.</li>
+      </ul>
+      <p><strong>Where You See It:</strong> Ray IDs appear in HTTP response headers (<code>ALabs-Ray-Id</code>), error pages, and API responses for debugging purposes.</p>
+
+      <h3>3.4. Technical Information (Not Logged or Stored)</h3>
+      <p><strong>Ephemeral Processing Only:</strong></p>
+      <p>
+        For security and abuse prevention, certain technical data is processed in server memory but is <strong>never logged, never stored, and never persisted</strong> to disk:
+      </p>
+      <ul>
+        <li><strong>Request Origin:</strong> The request origin (things like your User-Agent, and other specifications such as browser type and version) is processed in-memory for:
+          <ul style="margin-top: 0.5rem;">
+            <li>Rate limiting (preventing abuse by limiting requests per source)</li>
+            <li>Cloudflare Turnstile verification (bot detection)</li>
+            <li>Session verification cache (maintaining your verified status for 4 hours without re-verification)</li>
+          </ul>
+          This information exists only in RAM for milliseconds during request processing and is immediately discarded. It is never written to logs, databases, or files.
+        </li>
+        <li><strong>User-Agent String:</strong> Your browser type and version are processed in-memory alongside request origin to create a hashed session identifier for Turnstile verification. The original User-Agent string is never logged.</li>
+        <li><strong>Session Hash:</strong> We create a SHA-256 hash of (origin + user-agent) to verify that you've completed the Cloudflare Turnstile challenge. Only the hash is stored in memory for 4 hours—the original data is immediately discarded. This hash cannot be reversed to reveal your origin or identity.</li>
+      </ul>
+      <p><strong>What This Means:</strong></p>
+      <ul>
+        <li>We cannot see or retrieve your IP address from our logs—it doesn't exist in our logs.</li>
+        <li>We cannot track your browsing patterns or build a profile of your activity.</li>
+        <li>Once your request is processed, this technical data is gone forever.</li>
       </ul>
 
-      <h2>4. Data Retention and Deletion</h2>
-      <p>
-        All uploaded files and their associated metadata are automatically and permanently deleted from our servers 24 hours after they are uploaded. This is an irreversible process, and the data cannot be recovered. We do not offer long-term storage, and our Service should not be used as a backup solution.
-      </p>
-
-      <h2>5. Data Security</h2>
-      <p>
-        We implement a variety of security measures to maintain the safety of your personal information. Our Service uses end-to-end encryption for file content, which means that we do not have access to the decryption keys. The encryption and decryption processes occur on your device. All communications between your device and our servers are encrypted using Transport Layer Security (TLS). While we strive to use commercially acceptable means to protect your Personal Information, we cannot guarantee its absolute security.
-      </p>
-
-      <h2>6. Sharing Your Information</h2>
-      <p>We do not sell, trade, or otherwise transfer your personally identifiable information to outside parties except in the following circumstances:</p>
+      <h2>4. Information We Explicitly Do NOT Collect</h2>
+      <p>To be absolutely clear, we do not collect, log, or store:</p>
       <ul>
-        <li>
-          <strong>Service Providers:</strong> We may employ third-party companies and individuals to facilitate our Service, such as hosting providers and email delivery services. These third parties have access to your Personal Information only to perform these tasks on our behalf and are obligated not to disclose or use it for any other purpose.
-        </li>
-        <li>
-          <strong>Legal Requirements:</strong> We may disclose your information if required to do so by law or in response to valid requests by public authorities (e.g., a court or a government agency).
-        </li>
+        <li>❌ IP addresses (not logged, not stored)</li>
+        <li>❌ User accounts or authentication credentials</li>
+        <li>❌ Browser fingerprints or device identifiers</li>
+        <li>❌ Cookies for tracking purposes (we use no tracking cookies)</li>
+        <li>❌ Geographic location data</li>
+        <li>❌ Behavioral analytics or usage patterns</li>
+        <li>❌ Referrer information (where you came from)</li>
+        <li>❌ Search history or browsing history</li>
+        <li>❌ Social media profiles or connections</li>
+        <li>❌ Payment information (the service is free)</li>
       </ul>
 
-      <h2>7. Your Data Protection Rights</h2>
+      <h2>5. How We Use Your Information</h2>
+      <p>We use the minimal information we collect strictly for the following purposes:</p>
+      <ul>
+        <li><strong>File Storage and Delivery:</strong> To store your encrypted files and make them available for download via the unique URL you receive.</li>
+        <li><strong>Email Notifications:</strong> To send file sharing notifications to the email addresses you provide (optional feature).</li>
+        <li><strong>Service Operation:</strong> To generate QR codes for easy file sharing and manage file lifecycle (automatic deletion after 24 hours).</li>
+        <li><strong>Security and Abuse Prevention:</strong> To prevent denial-of-service attacks, spam, and abuse through rate limiting and bot detection.</li>
+        <li><strong>Technical Support:</strong> To debug issues and improve service reliability using Ray IDs when you report problems.</li>
+        <li><strong>Legal Compliance:</strong> To comply with applicable laws and respond to valid legal requests (see Section 8).</li>
+      </ul>
+      <p><strong>We do NOT use your information for:</strong></p>
+      <ul>
+        <li>Marketing or advertising</li>
+        <li>Profiling or behavioral analysis</li>
+        <li>Selling or sharing data with third parties</li>
+        <li>Training AI or machine learning models</li>
+        <li>Any purpose other than those explicitly stated above</li>
+      </ul>
+
+      <h2>6. Data Security and Encryption</h2>
+      
+      <h3>6.1. End-to-End Encryption</h3>
+      <p>Synkros implements true end-to-end encryption (E2EE):</p>
+      <ul>
+        <li><strong>Client-Side Encryption:</strong> Files are encrypted in your browser using AES-256-GCM encryption before upload begins.</li>
+        <li><strong>Key Management:</strong> The encryption key is generated in your browser using cryptographically secure random number generation. This key is embedded in the download URL fragment (after the # symbol) and never leaves your device or reaches our servers.</li>
+        <li><strong>Zero-Knowledge:</strong> We have no access to encryption keys, meaning we cannot decrypt your files <em>even if compelled by law.</em></li>
+        <li><strong>Client-Side Decryption:</strong> When someone downloads a file, the encryption key is extracted from the URL fragment, and decryption happens entirely in their browser.</li>
+      </ul>
+
+      <h3>6.2. Transport Security</h3>
+      <ul>
+        <li><strong>TLS Encryption:</strong> All communications between your browser and our servers use TLS 1.2 or higher encryption.</li>
+        <li><strong>HTTPS Only:</strong> All traffic is forced to HTTPS, unencrypted HTTP connections are not allowed.</li>
+        <li><strong>HSTS:</strong> HTTP Strict Transport Security headers ensure browsers always use encrypted connections.</li>
+      </ul>
+
+      <h3>6.3. Server Security</h3>
+      <ul>
+        <li><strong>Content Security Policy:</strong> We implement strict CSP headers to prevent XSS attacks and code injection.</li>
+        <li><strong>Security Headers:</strong> We use Helmet.js to set comprehensive security headers (X-Frame-Options, X-Content-Type-Options, etc.).</li>
+        <li><strong>Rate Limiting:</strong> Aggressive rate limiting prevents brute force attacks and DoS attempts.</li>
+        <li><strong>Input Validation:</strong> All user inputs are validated and sanitized.</li>
+      </ul>
+
+      <h3>6.4. Limitations</h3>
+      <p>While we implement industry-standard security measures, please understand:</p>
+      <ul>
+        <li>No system is 100% secure—we cannot guarantee absolute security.</li>
+        <li>If you share a file URL (including the encryption key), <em>anyone with that URL</em> can decrypt the file. The URL is your responsibility.</li>
+        <li>Email is not encrypted—if you share via email, the recipient's email provider can see the download link.</li>
+      </ul>
+
+      <h2>7. Data Retention and Deletion</h2>
+      
+      <h3>7.1. Automatic Deletion</h3>
+      <p>All data is subject to automatic deletion:</p>
+      <ul>
+        <li><strong>File Content:</strong> Deleted exactly 24 hours after upload.</li>
+        <li><strong>File Metadata:</strong> Deleted exactly 24 hours after upload.</li>
+        <li><strong>Email Addresses:</strong> Deleted exactly 24 hours after upload (stored in file metadata).</li>
+        <li><strong>Ray IDs and Logs:</strong> Purged during the 24-hour cleanup process.</li>
+      </ul>
+
+      <h3>7.2. Deletion Process</h3>
+      <ul>
+        <li>An automated cleanup job runs every 3 hours to permanently delete expired files.</li>
+        <li>Deletion is permanent and irreversible—files cannot be recovered once deleted.</li>
+        <li>Both the encrypted file content and its metadata are deleted from our storage systems.</li>
+        <li>Orphaned files (those without metadata) are also cleaned up automatically.</li>
+      </ul>
+
+      <h3>7.3. No Backups</h3>
+      <p><strong>Important:</strong> Synkros is not a backup service. We do not create backups of uploaded files. Once deleted, your files are gone forever. Do not use Synkros as your only copy of important files.</p>
+
+      <h2>8. Third-Party Services</h2>
+
+      <h3>8.1. Email Delivery</h3>
+      <p>When you use the email sharing feature:</p>
+      <ul>
+        <li>We use our own email service provider to send email notifications containing the file download link.</li>
+        <li>Email content includes: sender email, recipient email, download link with encryption key, file size, and expiration notice.</li>
+        <li>Email providers (yours and the recipient's) can see this information.</li>
+        <li>We do not control how email providers handle your data—refer to their privacy policies.</li>
+      </ul>
+
+      <h3>8.2. Cloudflare Turnstile</h3>
+      <p>We use Cloudflare Turnstile for bot detection:</p>
+      <ul>
+        <li>Turnstile is a privacy-first CAPTCHA alternative that doesn't require solving puzzles.</li>
+        <li>Cloudflare may process browser information to verify you're human.</li>
+        <li>We do not send your IP address to Cloudflare for Turnstile verification.</li>
+        <li>Refer to <a href="https://www.cloudflare.com/privacypolicy/" target="_blank" rel="noopener noreferrer">Cloudflare's Privacy Policy</a> for details on their data processing.</li>
+      </ul>
+
+      <h3>8.3. No Other Third Parties</h3>
+      <p>We do not use:</p>
+      <ul>
+        <li>Google Analytics or any analytics platforms</li>
+        <li>Social media tracking pixels</li>
+        <li>Advertising networks</li>
+        <li>CDNs for tracking (only for serving static assets)</li>
+        <li>Third-party JavaScript libraries for tracking</li>
+      </ul>
+
+      <h2>9. Sharing and Disclosure of Information</h2>
+      
+      <h3>9.1. We Do Not Sell Your Data</h3>
+      <p>We do not sell, rent, trade, or otherwise transfer your information to third parties for monetary or other valuable consideration. Period.</p>
+
+      <h3>9.2. Service Providers</h3>
+      <p>We may share information with service providers who help us operate the service:</p>
+      <ul>
+        <li><strong>Hosting providers:</strong> Store encrypted files (they cannot decrypt them).</li>
+        <li><strong>Email service:</strong> Sends file sharing notifications when you use the email feature. The email service you use may access your data. We have no control over it.</li>
+      </ul>
+      <p>These providers that we use are contractually obligated to protect your data and use it only for the specific services they provide to us.</p>
+
+      <h2>10. Your Privacy Rights</h2>
+      
+      <h3>10.1. Access and Control</h3>
+      <p>Since we don't require accounts, you have inherent control:</p>
+      <ul>
+        <li><strong>Access:</strong> You can access your files anytime using the download URL you received.</li>
+        <li><strong>Deletion:</strong> Files are automatically deleted after 24 hours. There is no manual deletion feature because files are ephemeral by design.</li>
+        <li><strong>Portability:</strong> You can download your files at any time before they expire.</li>
+      </ul>
+
+      <h3>10.2. Regional Privacy Rights</h3>
+      <p>Depending on your location, you may have additional rights:</p>
+      <ul>
+        <li><strong>GDPR (EU/EEA):</strong> Right to access, rectification, erasure, restriction, portability, and objection.</li>
+        <li><strong>CCPA (California):</strong> Right to know, delete, and opt-out of sale (note: we don't sell data).</li>
+        <li><strong>Other Jurisdictions:</strong> Similar rights may apply under local privacy laws.</li>
+      </ul>
+      <p><strong>Exercising Rights:</strong> Given our minimal data collection and automatic deletion, most traditional privacy rights are moot. However, if you have concerns or requests, contact us at <strong>axrxvm@gmail.com</strong>.</p>
+
+      <h3>10.3. Do Not Track</h3>
+      <p>We respect Do Not Track (DNT) browser signals. However, since we don't track users anyway, DNT has no practical effect on our service—we're already privacy-first by design.</p>
+
+      <h2>11. International Data Transfers</h2>
       <p>
-        Depending on your jurisdiction, you may have certain rights regarding your personal data, including the right to access, correct, or delete your information. Since data is automatically deleted after 24 hours, the information we hold is transient. For any requests or questions about your data, please contact us.
+        Your information may be transferred to and processed on servers located outside your country of residence. Different countries have different data protection laws. By using Synkros, you consent to the transfer of your information to countries that may have different privacy laws. We ensure that appropriate safeguards are in place to protect your data regardless of location.
       </p>
 
-      <h2>8. Changes to This Privacy Policy</h2>
+      <h2>12. Changes to This Privacy Policy</h2>
       <p>
-        We may update our Privacy Policy from time to time. We will notify you of any changes by posting the new Privacy Policy on this page. You are advised to review this Privacy Policy periodically for any changes.
+        We may update this Privacy Policy from time to time to reflect changes in our practices, technology, legal requirements, or other factors. When we make changes:
+      </p>
+      <ul>
+        <li>We will update the "Last Updated" date at the top of this page.</li>
+        <li>For material changes, we will provide notice on our homepage or via other appropriate means.</li>
+        <li>Your continued use of the Service after changes take effect constitutes acceptance of the updated policy.</li>
+      </ul>
+      <p>We encourage you to review this Privacy Policy periodically to stay informed about how we protect your privacy.</p>
+
+      <h2>13. Contact Us</h2>
+      <p>If you have questions, concerns, or requests regarding this Privacy Policy or our data practices, please contact us:</p>
+      <ul>
+        <li><strong>Email:</strong> axrxvm@gmail.com</li>
+        <li><strong>GitHub:</strong> <a href="https://github.com/axrxvm/synkros" target="_blank" rel="noopener noreferrer">github.com/axrxvm/synkros</a></li>
+      </ul>
+      <p>We will respond to privacy inquiries within a reasonable timeframe.</p>
+
+      <h2>14. Transparency Commitment</h2>
+      <p>
+        Synkros is an open-source project. You can inspect our code, verify our privacy claims, and contribute to improvements on GitHub. We believe transparency is essential to trust, and we invite technical users to audit our implementation.
+      </p>
+      <p>
+        <strong>Our Promise:</strong> We will never compromise your privacy for profit. If we ever need to change our business model or data practices in a way that affects privacy, we will notify you clearly and give you the option to stop using the service before changes take effect.
       </p>
 
-      <h2>9. Contact Us</h2>
-      <p>If you have any questions about this Privacy Policy, please contact us at <strong>axrxvm@gmail.com</strong>.</p>
+      <hr style="margin: 3rem 0; border: none; border-top: 1px solid #333;">
+      
+      <p style="font-size: 0.9rem; color: #888;">
+        <strong>Summary:</strong> We collect only encrypted files (we can't decrypt them), optional email addresses for sharing, and ephemeral Ray IDs for debugging. We don't log IP addresses, don't track users, don't sell data, and automatically delete everything after 24 hours. Your privacy is our priority.
+      </p>
     </main>
 
     <footer class="footer">

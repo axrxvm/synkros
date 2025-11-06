@@ -41,6 +41,8 @@ const corsOptions = {
 app.use(cors(corsOptions));
 app.disable("x-powered-by");
 
+// RayID middleware - unique per request for debugging/logging purposes only
+// Not tied to user sessions or used for tracking
 app.use((req, res, next) => {
   const rayId = uuidv4();
   req.rayId = rayId;
