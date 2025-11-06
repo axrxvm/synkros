@@ -21,8 +21,8 @@ Whether you’re sending a project build, a resume, or a dumb meme—Synkros mak
 |--------|-------------|
 | ⏲️ **Auto-Delete After 24 Hours** | Files are automatically removed after 24h to keep things clean and temporary. |
 | 🔐 **End-to-End Encrypted Storage** | Files are encrypted client-side (AES-256-GCM) before upload—**not even the server can read them**. |
-| � **Web Worker Encryption** | Utilizes Web Workers for non-blocking encryption/decryption with real-time progress tracking. |
-| �📱 **QR Code for Each File** | Instantly generate a scannable QR code for every upload—perfect for sharing across devices. |
+| 🧠 **Web Worker Encryption** | Utilizes Web Workers for non-blocking encryption/decryption with real-time progress tracking. |
+| 📱 **QR Code for Each File** | Instantly generate a scannable QR code for every upload—perfect for sharing across devices. |
 | ✉️ **Email Link to Recipient** | Enter an email, and Synkros will mail the file link directly—no hassle. |
 | 🤖 **Bot Protection** | Cloudflare Turnstile verification prevents automated abuse while maintaining privacy. |
 | 🧼 **Minimalist UI** | Designed to be dead simple. Drag. Drop. Done. |
