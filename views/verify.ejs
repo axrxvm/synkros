@@ -180,7 +180,14 @@
 
     <script nonce="<%= locals.cspNonce %>">
       let verificationInProgress = false;
-      const redirectUrl = '<%= redirect %>';
+      let redirectUrl = '<%= redirect %>';
+      
+      // Preserve the hash/fragment from the current URL (client-side only, never sent to server)
+      // The hash is appended by our custom redirect logic in checkVerification
+      const preservedHash = window.location.hash;
+      if (preservedHash && !redirectUrl.includes('#')) {
+        redirectUrl += preservedHash;
+      }
       
       function showStatus(message, isError = false) {
         const statusEl = document.getElementById('statusMessage');

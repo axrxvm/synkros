@@ -10,9 +10,9 @@ document.addEventListener('DOMContentLoaded', function() {
   // Auto-extract key from URL fragment if present
   const urlFragment = window.location.hash.substring(1);
   if (urlFragment && urlFragment.length === 64) { // 32 bytes = 64 hex chars
-    // Store the key for download
+    // Store the key in memory only (not localStorage/sessionStorage for security)
     window.encryptionKey = urlFragment;
-    // Remove the key from URL for security
+    // Remove the key from URL immediately for security
     history.replaceState(null, null, window.location.pathname + window.location.search);
   }
 });

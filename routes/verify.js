@@ -30,9 +30,25 @@ const checkVerification = (req, res, next) => {
   }
   
   logger.info(`Unverified session redirected to verify page from: ${req.path}`, req);
-  // Redirect to verify with the original URL as a parameter
+  
+  // Use client-side redirect to preserve URL hash/fragment (encryption key)
+  // Server-side redirects lose the hash, so we send HTML with JavaScript redirect
   const redirectUrl = encodeURIComponent(req.originalUrl);
-  return res.redirect(`/verify?redirect=${redirectUrl}`);
+  const nonce = res.locals.cspNonce || '';
+  
+  return res.send(`
+    <!DOCTYPE html>
+    <html>
+    <head><title>Redirecting...</title></head>
+    <body>
+    <script nonce="${nonce}">
+      // Preserve hash/fragment when redirecting to verification page
+      const hash = window.location.hash;
+      window.location.href = '/verify?redirect=${redirectUrl}' + hash;
+    </script>
+    </body>
+    </html>
+  `);
 };
 
 // GET /verify - Show verification page
