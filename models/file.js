@@ -58,7 +58,7 @@ async function getFileMetadata(uuid) {
     if (error.code === 'ENOENT') {
       return null;
     }
-    console.error(`Error reading metadata for ${uuid}:`, error);
+    console.error("Error reading metadata for %s:", uuid, error);
     throw error;
   }
 }
