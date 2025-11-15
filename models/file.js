@@ -84,7 +84,7 @@ async function updateFileMetadata(uuid, updates) {
     await fs.writeFile(filePath, JSON.stringify(metadata)); // Minified JSON
     return metadata;
   } catch (error) {
-    console.error(`Error updating metadata for ${uuid}:`, error);
+    console.error("Error updating metadata for %s:", uuid, error);
     throw error;
   }
 }
