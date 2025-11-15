@@ -86,10 +86,15 @@ router.post("/", (req, res) => {
 
       // Clean up uploaded file if metadata save fails
       if (req.file?.path && fs.existsSync(req.file.path)) {
-        try {
-          fs.unlinkSync(req.file.path);
-        } catch (unlinkErr) {
-          console.error(`[${req.rayId}] Error deleting file after metadata save failure:`, unlinkErr.message);
+        const resolvedPath = path.resolve(req.file.path);
+        if (resolvedPath.startsWith(uploadsDir)) {
+          try {
+            fs.unlinkSync(resolvedPath);
+          } catch (unlinkErr) {
+            console.error(`[${req.rayId}] Error deleting file after metadata save failure:`, unlinkErr.message);
+          }
+        } else {
+          console.warn(`[${req.rayId}] Refusing to delete file outside uploads directory: ${resolvedPath}`);
         }
       }
 
