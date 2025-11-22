@@ -45,6 +45,7 @@
         <a href="/" class="navbar-logo">Synkros</a>
         <div class="navbar-links">
           <a href="/" class="nav-link">Upload</a>
+          <a href="/direct" class="nav-link">Direct</a>
           <a href="/privacy" class="nav-link">Privacy</a>
         </div>
       </div>
@@ -52,7 +53,7 @@
 
     <main>
       <h1>Privacy Policy</h1>
-      <p class="last-updated">Last Updated: November 6, 2025</p>
+      <p class="last-updated">Last Updated: November 22, 2025</p>
 
       <h2>1. Our Commitment to Privacy</h2>
       <p>
@@ -65,14 +66,22 @@
         <li><strong>No User Tracking:</strong> We do not track who you are, where you're from, or what you do on our platform.</li>
         <li><strong>No User Accounts:</strong> We don't require registration, usernames, passwords, or any form of account creation.</li>
         <li><strong>End-to-End Encryption:</strong> All file encryption and decryption happens in your browser—we never see your decryption keys.</li>
-        <li><strong>Automatic Deletion:</strong> All data is permanently destroyed within 24 hours, no exceptions.</li>
+        <li><strong>Automatic Deletion:</strong> Server-stored data is permanently destroyed within 24 hours. P2P mode doesn't store files on our servers at all.</li>
         <li><strong>Minimal Data Collection:</strong> We only collect what is absolutely necessary to provide the service.</li>
         <li><strong>No Third-Party Analytics:</strong> We don't use Google Analytics, Facebook Pixel, or any third-party tracking services.</li>
       </ul>
 
       <h2>3. Information We Collect and Process</h2>
       
-      <h3>3.1. File Data</h3>
+      <h3>3.1. Service Modes</h3>
+      <p>Synkros offers two distinct file-sharing modes with different privacy characteristics:</p>
+      <ul>
+        <li><strong>Server-Based Mode (Upload):</strong> Files are encrypted client-side and uploaded to our servers for 24-hour temporary storage. This mode is subject to file size limits (currently 500MB).</li>
+        <li><strong>Peer-to-Peer Mode (Direct):</strong> Files are transferred directly between users via WebRTC without server storage. Our servers only facilitate connection signaling between peers. This mode supports unlimited file sizes and provides enhanced privacy as files never touch our servers.</li>
+      </ul>
+      <p><strong>Privacy Impact:</strong> The mode you choose significantly affects what data we collect and process. P2P mode minimizes server-side data collection to only connection signaling metadata.</p>
+      
+      <h3>3.2. File Data (Server-Based Mode Only)</h3>
       <p><strong>What We Store:</strong></p>
       <ul>
         <li><strong>Encrypted File Content:</strong> When you upload a file, it is encrypted in your browser using AES-256-GCM encryption before being transmitted to our servers. We store only the encrypted blob. The encryption key never leaves your device and is never sent to our servers—it's embedded in the download URL fragment (the part after the # symbol), which browsers don't send to servers.</li>
@@ -86,7 +95,31 @@
       </ul>
       <p><strong>Retention Period:</strong> All file data and metadata are automatically and permanently deleted exactly 24 hours after upload. This process is automated and irreversible.</p>
 
-      <h3>3.2. Email Addresses (Optional Feature)</h3>
+      <h3>3.3. P2P Signaling Data (Peer-to-Peer Mode Only)</h3>
+      <p><strong>What We Collect:</strong></p>
+      <ul>
+        <li><strong>Room Codes:</strong> Randomly generated room identifiers used to connect peers.</li>
+        <li><strong>Room Passwords (Hashed):</strong> If you set a room password, we store a SHA-256 hash (one-way encryption) for verification. We cannot see your actual password.</li>
+        <li><strong>WebRTC Signaling Data:</strong> ICE candidates, SDP offers/answers, and connection state information required to establish peer-to-peer connections.</li>
+        <li><strong>Peer Count:</strong> Number of participants in a room (not individual identities).</li>
+      </ul>
+      <p><strong>What We Cannot See:</strong></p>
+      <ul>
+        <li>File contents—files transfer directly between peers, never through our servers</li>
+        <li>File names, sizes, or types being shared between peers</li>
+        <li>Which specific peers are transferring files to each other</li>
+        <li>Encryption keys—generated and shared peer-to-peer via WebRTC DataChannels</li>
+      </ul>
+      <p><strong>How We Use It:</strong></p>
+      <ul>
+        <li>Signaling data is used solely to establish WebRTC connections between peers</li>
+        <li>Room data enables multiple users to discover and connect to each other</li>
+        <li>Connection state helps manage room cleanup when peers disconnect</li>
+      </ul>
+      <p><strong>Retention Period:</strong> Room data expires after 5 minutes of inactivity or when all peers leave. Signaling messages are ephemeral (stored in memory only for active polling) and are never persisted to disk.</p>
+      <p><strong>Technical Details:</strong> We use STUN servers (Cloudflare STUN by default) for NAT traversal. STUN servers CANNOT see your file contents, They are encrypted by us.</p>
+
+      <h3>3.4. Email Addresses (Optional Feature, Server-Based Mode)</h3>
       <p><strong>What We Collect:</strong></p>
       <ul>
         <li>If you choose to use our email sharing feature, we temporarily store the sender's and recipient's email addresses to send the share notification.</li>
@@ -99,7 +132,7 @@
       <p><strong>Retention Period:</strong> Email addresses are deleted along with all other file metadata after 24 hours.</p>
       <p><strong>Note:</strong> Email sharing is entirely optional. You can share files via direct link without providing any email addresses.</p>
 
-      <h3>3.3. Ray ID (Debugging Identifier)</h3>
+      <h3>3.5. Ray ID (Debugging Identifier)</h3>
       <p><strong>What It Is:</strong></p>
       <ul>
         <li>A Ray ID is a randomly generated UUID created for each HTTP request you make to our service.</li>
@@ -120,7 +153,7 @@
       </ul>
       <p><strong>Where You See It:</strong> Ray IDs appear in HTTP response headers (<code>ALabs-Ray-Id</code>), error pages, and API responses for debugging purposes.</p>
 
-      <h3>3.4. Technical Information (Not Logged or Stored)</h3>
+      <h3>3.6. Technical Information (Not Logged or Stored)</h3>
       <p><strong>Ephemeral Processing Only:</strong></p>
       <p>
         For security and abuse prevention, certain technical data is processed in server memory but is <strong>never logged, never stored, and never persisted</strong> to disk:
@@ -157,14 +190,17 @@
         <li>❌ Search history or browsing history</li>
         <li>❌ Social media profiles or connections</li>
         <li>❌ Payment information (the service is free)</li>
+        <li>❌ P2P file contents or metadata (files transfer directly between peers)</li>
+        <li>❌ Individual peer identities or connection patterns in P2P mode</li>
       </ul>
 
       <h2>5. How We Use Your Information</h2>
       <p>We use the minimal information we collect strictly for the following purposes:</p>
       <ul>
-        <li><strong>File Storage and Delivery:</strong> To store your encrypted files and make them available for download via the unique URL you receive.</li>
-        <li><strong>Email Notifications:</strong> To send file sharing notifications to the email addresses you provide (optional feature).</li>
-        <li><strong>Service Operation:</strong> To generate QR codes for easy file sharing and manage file lifecycle (automatic deletion after 24 hours).</li>
+        <li><strong>File Storage and Delivery (Server Mode):</strong> To store your encrypted files and make them available for download via the unique URL you receive.</li>
+        <li><strong>P2P Connection Signaling (Direct Mode):</strong> To facilitate WebRTC connection establishment between peers by relaying signaling data and managing room membership.</li>
+        <li><strong>Email Notifications:</strong> To send file sharing notifications to the email addresses you provide (optional feature, server mode only).</li>
+        <li><strong>Service Operation:</strong> To generate QR codes for easy sharing, manage file lifecycle (automatic deletion after 24 hours for server mode), and maintain room state (5-minute TTL for P2P mode).</li>
         <li><strong>Security and Abuse Prevention:</strong> To prevent denial-of-service attacks, spam, and abuse through rate limiting and bot detection.</li>
         <li><strong>Technical Support:</strong> To debug issues and improve service reliability using Ray IDs when you report problems.</li>
         <li><strong>Legal Compliance:</strong> To comply with applicable laws and respond to valid legal requests (see Section 8).</li>
@@ -181,12 +217,20 @@
       <h2>6. Data Security and Encryption</h2>
       
       <h3>6.1. End-to-End Encryption</h3>
-      <p>Synkros implements true end-to-end encryption (E2EE):</p>
+      <p>Synkros implements true end-to-end encryption (E2EE) in both modes:</p>
+      <p><strong>Server-Based Mode:</strong></p>
       <ul>
         <li><strong>Client-Side Encryption:</strong> Files are encrypted in your browser using AES-256-GCM encryption before upload begins.</li>
         <li><strong>Key Management:</strong> The encryption key is generated in your browser using cryptographically secure random number generation. This key is embedded in the download URL fragment (after the # symbol) and never leaves your device or reaches our servers.</li>
         <li><strong>Zero-Knowledge:</strong> We have no access to encryption keys, meaning we cannot decrypt your files <em>even if compelled by law.</em></li>
         <li><strong>Client-Side Decryption:</strong> When someone downloads a file, the encryption key is extracted from the URL fragment, and decryption happens entirely in their browser.</li>
+      </ul>
+      <p><strong>Peer-to-Peer Mode:</strong></p>
+      <ul>
+        <li><strong>Direct Encryption:</strong> Files are encrypted in real-time during transfer using AES-256-GCM encryption.</li>
+        <li><strong>Peer-to-Peer Key Exchange:</strong> Encryption keys are generated by the sender and transmitted directly to receivers via encrypted WebRTC DataChannels—keys never pass through our servers.</li>
+        <li><strong>Enhanced Privacy:</strong> File data never touches our servers. We only see WebRTC signaling metadata required for connection establishment.</li>
+        <li><strong>Web Worker Optimization:</strong> Large files (>10MB) are pre-encrypted in a Web Worker to prevent browser freezing, then transferred peer-to-peer.</li>
       </ul>
 
       <h3>6.2. Transport Security</h3>
@@ -254,7 +298,15 @@
         <li>Refer to <a href="https://www.cloudflare.com/privacypolicy/" target="_blank" rel="noopener noreferrer">Cloudflare's Privacy Policy</a> for details on their data processing.</li>
       </ul>
 
-      <h3>8.3. No Other Third Parties</h3>
+      <h3>8.3. STUN Servers (P2P Mode Only)</h3>
+      <p>When using Peer-to-Peer mode, we rely on STUN servers for NAT traversal:</p>
+      <ul>
+        <li>We use Cloudflare STUN servers by default (stun:stun.cloudflare.com:3478)</li>
+        <li>STUN servers help establish direct peer-to-peer connections through firewalls and routers</li>
+        <li>STUN servers CANNOT see file contents</li>
+      </ul>
+
+      <h3>8.4. No Other Third Parties</h3>
       <p>We do not use:</p>
       <ul>
         <li>Google Analytics or any analytics platforms</li>
@@ -334,7 +386,7 @@
       <hr style="margin: 3rem 0; border: none; border-top: 1px solid #333;">
       
       <p style="font-size: 0.9rem; color: #888;">
-        <strong>Summary:</strong> We collect only encrypted files (we can't decrypt them), optional email addresses for sharing, and ephemeral Ray IDs for debugging. We don't log IP addresses, don't track users, don't sell data, and automatically delete everything after 24 hours. Your privacy is our priority.
+        <strong>Summary:</strong> Server mode: We collect only encrypted files (we can't decrypt them), optional email addresses for sharing, and ephemeral Ray IDs for debugging. P2P mode: Files never touch our servers—we only facilitate peer connections via signaling. We don't log IP addresses, don't track users, don't sell data, and automatically delete everything after expiration (24 hours for server mode, 5 minutes for P2P room data). Your privacy is our priority.
       </p>
     </main>
 

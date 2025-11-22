@@ -19,12 +19,15 @@ const checkVerification = (req, res, next) => {
   const sessionHash = crypto.createHash('sha256').update(sessionId + userAgent).digest('hex');
   
   if (verifiedCache.has(sessionHash)) {
-    logger.info(`Verified session accessing: ${req.path}`, req);
+    // Skip logging for polling endpoints to reduce log spam
+    if (!req.path.includes('/poll')) {
+      logger.info(`Verified session accessing: ${req.path}`, req);
+    }
     return next();
   }
   
   // Skip verification for certain routes
-  const skipRoutes = ['/verify', '/api/verify', '/css/', '/js/', '/img/', '/favicon', "/api/system", "/api/status"];
+  const skipRoutes = ['/verify', '/api/verify', '/css/', '/js/', '/img/', '/favicon', "/api/system", "/api/status", "/direct/"];
   if (skipRoutes.some(route => req.path.startsWith(route))) {
     return next();
   }

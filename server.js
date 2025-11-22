@@ -76,11 +76,11 @@ app.use((req, res, next) => {
     res.locals.cspNonce = nonce;
     const directives = [
       `default-src 'self'`,
-      `script-src 'self' 'nonce-${nonce}' https://challenges.cloudflare.com`,
-      `script-src-elem 'self' 'nonce-${nonce}' https://challenges.cloudflare.com`,
+      `script-src 'self' 'nonce-${nonce}' https://challenges.cloudflare.com https://cdn.jsdelivr.net https://cdnjs.cloudflare.com https://unpkg.com`,
+      `script-src-elem 'self' 'nonce-${nonce}' https://challenges.cloudflare.com https://cdn.jsdelivr.net https://cdnjs.cloudflare.com https://unpkg.com`,
       `style-src 'self' 'unsafe-inline'`,
       `img-src 'self' data:`,
-      `connect-src 'self' https://challenges.cloudflare.com`,
+      `connect-src 'self' https://challenges.cloudflare.com https://cdnjs.cloudflare.com stun:`,
       `font-src 'self' data:`,
       `worker-src 'self' blob:`,
       `object-src 'none'`,
@@ -116,9 +116,13 @@ app.use(express.static(path.join(__dirname, "public"), {
   etag: true,
   extensions: false,
   index: false,
-  maxAge: "7d",
+  maxAge: process.env.NODE_ENV === 'production' ? "7d" : 0,
   setHeaders: (res, path) => {
-    res.setHeader("Cache-Control", "public, max-age=604800, immutable");
+    if (process.env.NODE_ENV === 'production') {
+      res.setHeader("Cache-Control", "public, max-age=604800, immutable");
+    } else {
+      res.setHeader("Cache-Control", "no-cache, no-store, must-revalidate");
+    }
   }
 }));
 
@@ -137,6 +141,8 @@ app.use("/files", require("./routes/filePreview"));
 app.use("/files/download", require("./routes/download"));
 app.use("/api/system", require("./routes/system"));
 app.use("/api/status", require("./routes/status"));
+app.use("/api/qr", require("./routes/qr"));
+app.use("/direct", require("./routes/p2p"));
 app.get('/privacy', (req, res) => { res.render('privacy', { rayId: req.rayId }); });
 app.get('/tos', (req, res) => { res.render('tos', { rayId: req.rayId }); });
 app.get("/report", (req, res) => { res.render("abuse", { rayId: req.rayId }); });

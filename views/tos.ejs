@@ -42,6 +42,7 @@
         <a href="/" class="navbar-logo">Synkros</a>
         <div class="navbar-links">
           <a href="/" class="nav-link">Upload</a>
+          <a href="/direct" class="nav-link">Direct</a>
           <a href="/privacy" class="nav-link">Privacy</a>
         </div>
       </div>
@@ -49,7 +50,7 @@
 
     <main>
       <h1>Terms of Service</h1>
-      <p class="last-updated">Last Updated: November 6, 2025</p>
+      <p class="last-updated">Last Updated: November 22, 2025</p>
 
       <h2>1. Acceptance of Terms</h2>
       <p>
@@ -63,35 +64,61 @@
       
       <h3>2.1. What Synkros Does</h3>
       <p>
-        Synkros is a free, privacy-focused, end-to-end encrypted file-sharing platform that enables users to:
+        Synkros is a free, privacy-focused, end-to-end encrypted file-sharing platform that offers two distinct sharing modes:
       </p>
+      <p><strong>Server-Based Mode (Upload):</strong></p>
       <ul>
-        <li>Upload files</li>
+        <li>Upload files up to 500MB</li>
+        <li>Files are encrypted client-side and stored on our servers for 24 hours</li>
         <li>Share files via unique, encrypted download links</li>
         <li>Optionally share files via email notifications</li>
         <li>Download files securely with client-side decryption</li>
       </ul>
+      <p><strong>Peer-to-Peer Mode (Direct):</strong></p>
+      <ul>
+        <li>Transfer files of unlimited size directly between users</li>
+        <li>Files never touch our servers—transfers happen via WebRTC peer-to-peer connections</li>
+        <li>Create password-protected rooms for multiple participants (2-10 peers)</li>
+        <li>Share room codes via QR codes or direct links</li>
+        <li>Real-time encrypted file transfers with no server storage</li>
+      </ul>
 
       <h3>2.2. Zero-Knowledge Architecture</h3>
       <p>
-        Our Service implements true end-to-end encryption. Files are encrypted in your browser before upload, and we do not have access to encryption keys. This means:
+        Our Service implements true end-to-end encryption in both modes:
       </p>
+      <p><strong>Server-Based Mode:</strong> Files are encrypted in your browser before upload, and we do not have access to encryption keys. This means:</p>
       <ul>
         <li>We cannot decrypt, view, or access the contents of your files</li>
         <li>We cannot recover files if you lose the download link</li>
         <li>We cannot comply with requests to provide file contents, even under legal compulsion</li>
       </ul>
+      <p><strong>Peer-to-Peer Mode:</strong> Enhanced privacy through direct peer-to-peer transfers:</p>
+      <ul>
+        <li>Files transfer directly between peers via WebRTC—they never reach our servers</li>
+        <li>We only facilitate connection signaling; we cannot see file contents, names, or sizes</li>
+        <li>Encryption keys are generated and exchanged peer-to-peer via encrypted DataChannels</li>
+        <li>Room passwords are hashed (SHA-256) and cannot be retrieved in plain text</li>
+      </ul>
 
-      <h3>2.3. Temporary Storage</h3>
+      <h3>2.3. Temporary Storage and Ephemeral Data</h3>
       <p>
         <strong>Important:</strong> Synkros is designed for temporary file sharing, not permanent storage:
       </p>
+      <p><strong>Server-Based Mode:</strong></p>
       <ul>
         <li>All files are automatically and permanently deleted 24 hours after upload</li>
         <li>Deletion is irreversible—files cannot be recovered once deleted</li>
         <li>We do not create backups of uploaded files</li>
-        <li>The Service must not be used as a backup or long-term storage solution</li>
       </ul>
+      <p><strong>Peer-to-Peer Mode:</strong></p>
+      <ul>
+        <li>Files are never stored on our servers—they transfer directly between peers</li>
+        <li>Room data (signaling information) expires after 5 minutes of inactivity</li>
+        <li>Once all peers disconnect, room data is immediately purged</li>
+        <li>File transfers are live and real-time—there is no persistence</li>
+      </ul>
+      <p><strong>Both Modes:</strong> The Service must not be used as a backup or long-term storage solution.</p>
 
       <h3>2.4. No Account Required</h3>
       <p>
@@ -548,6 +575,21 @@
         We use Cloudflare Turnstile to prevent bot abuse. By using the Service, you consent to this verification. If you cannot or will not complete the verification, you cannot use the Service.
       </p>
 
+      <h3>13.5. Peer-to-Peer Mode (Direct)</h3>
+      <p>
+        When using the P2P mode, you acknowledge and agree that:
+      </p>
+      <ul>
+        <li><strong>Direct Connections:</strong> File transfers occur directly between your device and other peers' devices via WebRTC. We do not intermediate the transfer.</li>
+        <li><strong>Network Requirements:</strong> P2P mode requires compatible network configurations. Restrictive firewalls, corporate networks, or certain NAT types may prevent connections. We do not guarantee successful P2P connections.</li>
+        <li><strong>No TURN Servers:</strong> We do not provide TURN relay servers. If direct peer-to-peer connection fails, the transfer will not succeed.</li>
+        <li><strong>Room Limits:</strong> Rooms support 2-10 participants. We may enforce these limits and terminate rooms that exceed capacity.</li>
+        <li><strong>Room Expiration:</strong> Rooms expire after 5 minutes of inactivity or when all peers disconnect. Room codes cannot be reused after expiration.</li>
+        <li><strong>Password Protection:</strong> Room passwords are optional. You are responsible for sharing room credentials securely. We store only password hashes and cannot recover lost passwords.</li>
+        <li><strong>No Server Storage:</strong> Files transferred in P2P mode are never stored on our servers. We cannot recover, retrieve, or provide access to these files.</li>
+        <li><strong>Connection Quality:</strong> Transfer speeds and reliability depend on peer network conditions. We are not responsible for slow transfers, connection drops, or failed transfers due to network issues.</li>
+      </ul>
+
       <h2>14. Reporting Violations</h2>
       <p>
         If you become aware of any violations of these Terms or illegal content on our Service:
@@ -592,7 +634,7 @@
       <hr style="margin: 3rem 0; border: none; border-top: 1px solid #333;">
       
       <p style="font-size: 0.9rem; color: #888;">
-        <strong>Summary:</strong> Use Synkros responsibly. Don't upload illegal content or abuse the service. Files auto-delete after 24 hours. We can't decrypt your files. The service is provided "as is" without warranties. By using Synkros, you accept these terms and our zero-knowledge privacy approach.
+        <strong>Summary:</strong> Use Synkros responsibly. Don't upload illegal content or abuse the service. Server mode: Files auto-delete after 24 hours. P2P mode: Files transfer directly between peers with no server storage. We can't decrypt your files in either mode. The service is provided "as is" without warranties. By using Synkros, you accept these terms and our zero-knowledge privacy approach.
       </p>
     </main>
 

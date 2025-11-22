@@ -1,7 +1,11 @@
 # Synkros AI Development Guide
 
 ## Project Overview
-Synkros is a privacy-first, end-to-end encrypted file sharing application. Files are encrypted **client-side** before upload using AES-256-GCM, with encryption keys embedded in URL fragments (`#key`) that never reach the server. This creates a true zero-knowledge architecture where the server stores only encrypted data.
+Synkros is a privacy-first, end-to-end encrypted file sharing application with two modes:
+1. **Server-based Upload**: Files encrypted client-side, stored on server for 24h with encryption keys in URL fragments
+2. **P2P File Sharing**: Direct peer-to-peer WebRTC transfers with no server storage, unlimited file size
+
+Both modes use AES-256-GCM encryption with client-side key generation, maintaining zero-knowledge architecture.
 
 ## Architecture Philosophy
 
@@ -13,6 +17,22 @@ Synkros is a privacy-first, end-to-end encrypted file sharing application. Files
 
 ### Web Worker Architecture
 Encryption/decryption runs in dedicated Web Workers (`public/js/crypto-worker.js`) to prevent UI blocking. The main E2EE class (`public/js/e2ee.js`) coordinates operations with progress callbacks. Always use the worker pattern for CPU-intensive crypto operations.
+
+**P2P Mode**: Uses hybrid approach - Web Worker for pre-encryption of large files (>10MB) before P2P transfer, main thread for small files and real-time decryption of received chunks.
+
+### P2P Architecture (WebRTC)
+Direct peer-to-peer file transfers via WebRTC DataChannels:
+- **Signaling**: REST-based signaling via `routes/p2p.js` with polling (1s interval)
+- **Room Management**: In-memory NodeCache with 5-min TTL, password-protected rooms (SHA-256 hashed)
+- **Mesh Topology**: Each peer connects to all others in room (2-10 participants)
+- **STUN Servers**: Cloudflare STUN by default with Google fallback (configurable via env)
+- **No TURN**: STUN-only for NAT traversal (document TURN setup for self-hosters if needed)
+
+Key files:
+- `public/js/p2p-manager.js`: WebRTC connection management, DataChannel handling
+- `public/js/p2p-crypto.js`: P2P-optimized E2EE with streaming encryption
+- `routes/p2p.js`: REST signaling endpoints (create/join/signal/poll/leave)
+- `views/p2p.ejs`: P2P UI with room codes, QR sharing, peer status
 
 ### Ray ID Tracking Pattern
 Every request gets a unique `rayId` (UUID v4) for debugging without user tracking:
@@ -115,6 +135,8 @@ logger.error("Error message", req);
 ### Route Organization
 - `/api/*`: JSON endpoints for file operations, status checks
 - `/files/*`: File preview and download routes
+- `/direct/*`: Direct (P2P) signaling API endpoints (rooms, signals, polling)
+- `/direct` (GET): Direct (P2P) UI page
 - Web routes render EJS views directly
 - Verification middleware applied globally except whitelisted paths
 
@@ -123,6 +145,8 @@ E2EE implementation in `public/js/`:
 - `e2ee.js`: Main E2EE class with worker coordination
 - `crypto-worker.js`: Web Worker for heavy operations
 - `e2ee-optimizer.js`: Performance optimizations for large files
+- `p2p-crypto.js`: P2P-optimized streaming encryption (hybrid worker/main thread)
+- `p2p-manager.js`: WebRTC connection and DataChannel management
 - Always test with files >100MB to validate worker performance
 
 ## Common Pitfalls
