@@ -31,7 +31,7 @@
     <link rel="stylesheet" href="/css/style.min.css" />
   </head>
 
-  <body>
+  <body data-ray-id="<%= rayId %>">
     <nav class="navbar">
     <div class="navbar-container">
       <a href="/" class="navbar-logo">Synkros</a>
@@ -164,12 +164,10 @@
         <a href="/report" class="footer-link">Report Abuse</a>
       </div>
     </footer>
+    <script src="/js/error-handler.js" nonce="<%= locals.cspNonce %>"></script>
     <script src="/js/e2ee.js" nonce="<%= locals.cspNonce %>"></script>
     <script src="/js/e2ee-optimizer.js" nonce="<%= locals.cspNonce %>"></script>
     <script src="/js/app.js" nonce="<%= locals.cspNonce %>"></script>
     <script src="/js/security.js" nonce="<%= locals.cspNonce %>"></script>
-    <script nonce="<%= locals.cspNonce %>">
-      document.body.setAttribute('data-ray-id', '<%= rayId %>');
-    </script>
   </body>
 </html>

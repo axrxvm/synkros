@@ -14,7 +14,7 @@
     <link rel="stylesheet" href="/css/style.min.css" />
   </head>
 
-  <body>
+  <body data-ray-id="<%= rayId || '' %>">
     <nav class="navbar">
       <div class="navbar-container">
         <a href="/" class="navbar-logo">Synkros</a>
@@ -60,11 +60,5 @@
         <a href="/report" class="footer-link">Report Abuse</a>
       </div>
     </footer>
-
-    <% if (locals.cspNonce) { %>
-    <script nonce="<%= cspNonce %>">
-      document.body.setAttribute('data-ray-id', '<%= rayId || "" %>');
-    </script>
-    <% } %>
   </body>
 </html>

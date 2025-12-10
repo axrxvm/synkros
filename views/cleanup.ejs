@@ -11,7 +11,7 @@
     <link rel="stylesheet" href="/css/style.min.css" />
   </head>
 
-  <body>
+  <body data-ray-id="<%= rayId %>">
     <div class="block-message">
       <h4>Clean Up Done!</h4>
       <p class="text-center">
@@ -31,8 +31,5 @@
       });
     </script>
     <script src="/js/security.js" nonce="<%= locals.cspNonce %>"></script>
-    <script nonce="<%= locals.cspNonce %>">
-      document.body.setAttribute('data-ray-id', '<%= rayId %>');
-    </script>
   </body>
 </html>

@@ -8,6 +8,8 @@
     <link rel="apple-touch-icon" href="/apple-icon.png" />
     <link rel="icon" type="image/png" href="/favicon.png" />
     <link rel="stylesheet" href="/css/style.min.css" />
+  </head>
+  <body data-ray-id="<%= rayId %>">
     <style>
       * { box-sizing: border-box; }
       html, body { 
@@ -959,6 +961,7 @@
     </footer>
     </div>
 
+    <script src="/js/error-handler.js" nonce="<%= locals.cspNonce %>"></script>
     <script src="/js/e2ee.js" nonce="<%= locals.cspNonce %>"></script>
     <script src="/js/p2p-crypto.js" nonce="<%= locals.cspNonce %>"></script>
     <script src="/js/p2p-manager.js" nonce="<%= locals.cspNonce %>"></script>

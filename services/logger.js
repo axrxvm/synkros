@@ -27,6 +27,7 @@ class DiscordTransport extends Transport {
     const colors = {
       error: 15158332, // Red
       warn: 16776960,  // Yellow
+      info: 3447003,   // Blue
     };
 
     const embed = {
@@ -97,7 +98,7 @@ const logger = winston.createLogger({
 if (process.env.LOG_WEBHOOK) {
   logger.add(
     new DiscordTransport({
-      level: 'warn', // Log WARN and ERROR (ERROR is higher priority than WARN)
+      level: 'info', // Log INFO, WARN, and ERROR
       webhookUrl: process.env.LOG_WEBHOOK,
     })
   );

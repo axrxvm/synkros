@@ -11,6 +11,9 @@
   <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico">
 
   <link rel="stylesheet" href="/css/style.min.css">
+</head>
+
+<body data-ray-id="<%= rayId %>">
   <style>
   /* Progress bar button styles (moved from global stylesheet so only download page loads them) */
   .download-container .success .btn {
@@ -238,12 +241,10 @@
   </footer>
 
   <% if(locals.isE2EE) {%>
+  <script src="/js/error-handler.js" nonce="<%= locals.cspNonce %>"></script>
   <script src="/js/e2ee.js" nonce="<%= locals.cspNonce %>"></script>
   <script src="/js/download.js" nonce="<%= locals.cspNonce %>"></script>
   <script src="/js/security.js" nonce="<%= locals.cspNonce %>"></script>
-  <script nonce="<%= locals.cspNonce %>">
-    document.body.setAttribute('data-ray-id', '<%= rayId %>');
-  </script>
   <% }%>
 </body>
 </html>

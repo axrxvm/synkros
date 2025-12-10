@@ -171,16 +171,35 @@ const uploadFile = async () => {
           onFileUploadSuccess(JSON.stringify(response));
         } else {
           let errorMessage = `Error processing file: ${xhr.status} ${xhr.statusText}`;
+          let rayId = null;
           try {
             const errorResponse = JSON.parse(xhr.responseText);
             if (errorResponse && errorResponse.error) {
               errorMessage = errorResponse.error;
             }
+            if (errorResponse && errorResponse.rayId) {
+              rayId = errorResponse.rayId;
+            }
           } catch (e) {
             // Response was not JSON or no 'error' property, use default message
             console.error("Could not parse error response as JSON:", e);
           }
-          showToast(errorMessage);
+          
+          // Show error modal for upload errors
+          if (window.errorHandler && xhr.status >= 500) {
+            const uploadError = new Error(errorMessage);
+            window.errorHandler.showErrorModal(uploadError, {
+              action: 'file_upload',
+              httpStatus: xhr.status,
+              serverRayId: rayId,
+              responseText: xhr.responseText.substring(0, 500)
+            }, {
+              title: 'Upload Failed',
+              message: errorMessage
+            });
+          } else {
+            showToast(errorMessage);
+          }
           // Reset UI
           uploadView.style.display = "block";
           progressView.style.display = "none";
@@ -198,7 +217,21 @@ const uploadFile = async () => {
     
   } catch (error) {
     console.error('Encryption error:', error);
-    showToast('Failed to encrypt file. Please try again.');
+    
+    // Show error modal with copy functionality
+    if (window.errorHandler) {
+      window.errorHandler.showErrorModal(error, {
+        action: 'file_encryption',
+        fileSize: file.size,
+        fileName: file.name
+      }, {
+        title: 'File Encryption Failed',
+        message: 'Failed to encrypt your file. This might be due to browser memory limitations or a corrupted file. Please try again with a smaller file or refresh the page.'
+      });
+    } else {
+      showToast('Failed to encrypt file. Please try again.');
+    }
+    
     // Reset UI
     uploadView.style.display = "block";
     progressView.style.display = "none";
@@ -308,7 +341,16 @@ emailForm.addEventListener("submit", (e) => {
         emailSendBtn.removeAttribute("disabled");
       }
     })
-    .catch(() => {
+    .catch((error) => {
+      console.error('Email send error:', error);
+      
+      if (window.errorHandler) {
+        window.errorHandler.logError(error, {
+          action: 'email_send',
+          emailTo: document.getElementById("emailTo").value
+        });
+      }
+      
       showToast("Something went wrong");
       emailSendBtn.innerHTML = "<span>Send</span>";
       emailSendBtn.removeAttribute("disabled");

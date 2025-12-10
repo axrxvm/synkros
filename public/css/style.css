@@ -1085,3 +1085,217 @@ html {
     width: 100%;
   }
 }
+
+/* Error Handler Modal Styles */
+.error-modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.7);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 10000;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  backdrop-filter: blur(4px);
+}
+
+.error-modal-overlay.show {
+  opacity: 1;
+}
+
+.error-modal {
+  background: var(--card-color);
+  border-radius: 12px;
+  max-width: 600px;
+  width: 90%;
+  max-height: 80vh;
+  overflow: hidden;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+  transform: scale(0.9);
+  transition: transform 0.3s ease;
+  border: 1px solid var(--light-border-color);
+}
+
+.error-modal-overlay.show .error-modal {
+  transform: scale(1);
+}
+
+.error-modal-header {
+  background: linear-gradient(135deg, #d32f2f 0%, #c62828 100%);
+  padding: 20px 24px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.error-modal-header h2 {
+  color: #ffffff;
+  font-size: 20px;
+  font-weight: 600;
+  margin: 0;
+}
+
+.error-modal-close {
+  background: transparent;
+  border: none;
+  color: rgba(255, 255, 255, 0.9);
+  font-size: 32px;
+  cursor: pointer;
+  padding: 0;
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 4px;
+  transition: all 0.2s ease;
+  line-height: 1;
+}
+
+.error-modal-close:hover {
+  background: rgba(255, 255, 255, 0.2);
+  color: #ffffff;
+}
+
+.error-modal-body {
+  padding: 24px;
+  overflow-y: auto;
+  max-height: calc(80vh - 180px);
+  color: var(--text-color);
+}
+
+.error-icon {
+  text-align: center;
+  font-size: 48px;
+  margin-bottom: 16px;
+}
+
+.error-message {
+  color: #e0e0e0;
+  font-size: 16px;
+  line-height: 1.6;
+  margin-bottom: 20px;
+  text-align: center;
+}
+
+.error-details {
+  background: rgba(0, 0, 0, 0.3);
+  border-radius: 8px;
+  padding: 16px;
+  margin-top: 16px;
+  border: 1px solid var(--light-border-color);
+}
+
+.error-meta {
+  font-size: 13px;
+  line-height: 1.8;
+  color: var(--text-color);
+  margin: 0;
+}
+
+.error-meta strong {
+  color: #e0e0e0;
+  font-weight: 600;
+}
+
+.error-meta code {
+  background: rgba(76, 139, 244, 0.1);
+  color: var(--app-color);
+  padding: 2px 6px;
+  border-radius: 3px;
+  font-family: 'Courier New', monospace;
+  font-size: 12px;
+}
+
+.error-modal-footer {
+  padding: 16px 24px;
+  background: rgba(0, 0, 0, 0.2);
+  border-top: 1px solid var(--light-border-color);
+  display: flex;
+  gap: 12px;
+  justify-content: flex-end;
+}
+
+.error-btn {
+  padding: 10px 20px;
+  border: none;
+  border-radius: 6px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.error-btn-copy {
+  background: var(--app-color);
+  color: #ffffff;
+}
+
+.error-btn-copy:hover:not(:disabled) {
+  background: var(--app-color-hover);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(76, 139, 244, 0.3);
+}
+
+.error-btn-copy:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+.error-btn-dismiss {
+  background: var(--btn-bg-color);
+  color: var(--text-color);
+  border: 1px solid var(--light-border-color);
+}
+
+.error-btn-dismiss:hover {
+  background: #3a3a3a;
+  border-color: var(--light-border-color-hover);
+}
+
+/* Responsive error modal */
+@media screen and (max-width: 768px) {
+  .error-modal {
+    width: 95%;
+    max-height: 90vh;
+  }
+
+  .error-modal-header {
+    padding: 16px 20px;
+  }
+
+  .error-modal-header h2 {
+    font-size: 18px;
+  }
+
+  .error-modal-body {
+    padding: 20px;
+    max-height: calc(90vh - 160px);
+  }
+
+  .error-modal-footer {
+    flex-direction: column;
+    padding: 12px 20px;
+  }
+
+  .error-btn {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .error-icon {
+    font-size: 40px;
+  }
+
+  .error-message {
+    font-size: 15px;
+  }
+}

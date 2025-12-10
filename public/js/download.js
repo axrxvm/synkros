@@ -73,15 +73,32 @@ async function handleE2EEDownload(event) {
     
     // Provide more specific error messages
     let errorMessage = 'Failed to download or decrypt file.';
+    let errorTitle = 'Download Failed';
+    
     if (error.message.includes('Download failed')) {
       errorMessage = 'Failed to download file. Please check your internet connection and try again.';
     } else if (error.message.includes('decrypt')) {
+      errorTitle = 'Decryption Failed';
       errorMessage = 'Failed to decrypt file. The file may be corrupted or the encryption key is invalid.';
     } else if (error.message.includes('Worker')) {
+      errorTitle = 'Service Unavailable';
       errorMessage = 'Decryption service unavailable. Please refresh the page and try again.';
     }
     
-    showError(errorMessage);
+    // Use error handler modal if available, otherwise fallback to inline error
+    if (window.errorHandler) {
+      window.errorHandler.showErrorModal(error, {
+        action: 'file_download_decrypt',
+        uuid: uuid,
+        hasEncryptionKey: !!window.encryptionKey,
+        downloadUrl: `/files/download/${uuid}`
+      }, {
+        title: errorTitle,
+        message: errorMessage
+      });
+    } else {
+      showError(errorMessage);
+    }
     
     // Reset button state with error styling
     downloadBtn.textContent = 'Download Failed';
