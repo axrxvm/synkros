@@ -21,7 +21,7 @@
     "multer": "2.0.2",
     "node-cache": "5.1.2",
     "node-cron": "4.0.7",
-    "nodemailer": "7.0.9",
+    "nodemailer": "7.0.11",
     "qrcode": "1.5.3",
     "timeago.js": "4.0.2",
     "uuid": "9.0.1",
