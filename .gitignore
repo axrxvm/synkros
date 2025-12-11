@@ -130,3 +130,4 @@ data/*
 .DS_Store
 
 ./synkros.zip
+build/
