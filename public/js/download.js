@@ -44,12 +44,13 @@ async function handleE2EEDownload(event) {
       window.encryptionKey, 
       filename,
       (progress) => {
-        // Update button progress bar
+        // Update button progress bar with more detailed status
         let status = 'Downloading...';
-        if (progress > 50) {
+        if (progress > 50 && progress <= 70) {
           status = 'Decrypting...';
-        }
-        if (progress >= 100) {
+        } else if (progress > 70 && progress < 100) {
+          status = 'Decompressing...';
+        } else if (progress >= 100) {
           status = 'Processing...';
         }
         updateButtonProgress(downloadBtn, progress, status);

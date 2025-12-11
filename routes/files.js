@@ -65,14 +65,19 @@ router.post("/", (req, res) => {
     // Generate a unique encryption key for this file (client-side will use this)
     const encryptionKey = crypto.randomBytes(32).toString('hex');
     
-    // Store file metadata (file is already encrypted client-side)
+    // Store file metadata (file is already encrypted client-side and compressed)
     const metadata = {
       filename: req.file.filename,
       uuid: uuid4(),
       path: req.file.path,
       size: req.file.size,
       originalName: req.body.originalName || req.file.originalname,
-      uploadRayId: req.rayId // Store RayID for debugging upload issues
+      uploadRayId: req.rayId, // Store RayID for debugging upload issues
+      // Compression metadata
+      compressed: true,
+      compressionAlgorithm: 'gzip',
+      originalSize: req.body.originalSize ? parseInt(req.body.originalSize) : null,
+      compressedSize: req.body.compressedSize ? parseInt(req.body.compressedSize) : null
     };
 
     let savedFile;

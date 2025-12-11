@@ -301,3 +301,54 @@
   console.log(`security: all protection measures active (Ray ID: ${rayId})`);
 
 })();
+
+// Ray ID Copy Functionality - Available on all pages
+(function() {
+  // Helper function to show toast notifications
+  function showToast(msg) {
+    // Try to find existing toast element
+    let toast = document.querySelector('.toast');
+    
+    // If no toast exists, create one
+    if (!toast) {
+      toast = document.createElement('div');
+      toast.className = 'toast';
+      document.body.appendChild(toast);
+    }
+    
+    clearTimeout(window.toastTimer);
+    toast.innerText = msg;
+    toast.classList.add('show');
+    window.toastTimer = setTimeout(() => {
+      toast.classList.remove('show');
+    }, 3000);
+  }
+  
+  // Add copy functionality to logo button
+  document.addEventListener('DOMContentLoaded', function() {
+    const logoBtn = document.getElementById('logoBtn');
+    
+    if (logoBtn) {
+      logoBtn.addEventListener('click', async function(e) {
+        e.preventDefault();
+        const rayId = document.body.getAttribute('data-ray-id');
+        
+        if (rayId) {
+          try {
+            await navigator.clipboard.writeText(rayId);
+            showToast('Ray ID copied to clipboard');
+          } catch (err) {
+            // Fallback for older browsers
+            const tempInput = document.createElement('input');
+            tempInput.value = rayId;
+            document.body.appendChild(tempInput);
+            tempInput.select();
+            document.execCommand('copy');
+            document.body.removeChild(tempInput);
+            showToast('Ray ID copied to clipboard');
+          }
+        }
+      });
+    }
+  });
+})();

@@ -15,7 +15,7 @@ class E2EECrypto {
       this.worker = new Worker('/js/crypto-worker.js');
       console.info('e2ee: worker initialized');
       this.worker.onmessage = (e) => {
-        const { id, type, progress, data, error } = e.data;
+        const { id, type, progress, data, error, originalSize, compressedSize } = e.data;
         const operation = this.operations.get(id);
         
         if (!operation) return;
@@ -36,7 +36,12 @@ class E2EECrypto {
           case 'success':
             // Worker sends ArrayBuffer as transferable; pass it through as-is
             console.log(`e2ee: op ${id} success`);
-            operation.resolve(data);
+            // If compression metadata is available, pass it along
+            if (originalSize !== undefined && compressedSize !== undefined) {
+              operation.resolve({ data, originalSize, compressedSize });
+            } else {
+              operation.resolve(data);
+            }
             this.operations.delete(id);
             break;
           case 'error':
@@ -303,7 +308,7 @@ class E2EECrypto {
       }
       
       const fileBuffer = await file.arrayBuffer();
-      const encryptedData = await this.executeWorkerOperation(
+      const result = await this.executeWorkerOperation(
         'encryptFile',
         { fileBuffer, keyHex },
         onProgress
@@ -314,7 +319,20 @@ class E2EECrypto {
         window.e2eePerfMonitor.endOperation(perfId, true);
       }
       
-      return new Blob([encryptedData], { type: 'application/octet-stream' });
+      // Result can be either raw data (fallback) or { data, originalSize, compressedSize }
+      if (result.data) {
+        // Worker returned compression metadata
+        return {
+          blob: new Blob([result.data], { type: 'application/octet-stream' }),
+          originalSize: result.originalSize,
+          compressedSize: result.compressedSize
+        };
+      } else {
+        // Fallback path - just return blob
+        return {
+          blob: new Blob([result], { type: 'application/octet-stream' })
+        };
+      }
     } catch (error) {
       // End performance monitoring with failure
       if (window.e2eePerfMonitor && perfId) {

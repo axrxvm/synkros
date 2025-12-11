@@ -8,6 +8,73 @@ class CryptoWorker {
     this.chunkSize = 16 * 1024 * 1024; // 16MB chunks for optimal performance
   }
 
+  // Compress data using gzip (fast, lossless compression)
+  async compressData(data) {
+    // Convert ArrayBuffer to Uint8Array if needed
+    const uint8Data = data instanceof ArrayBuffer ? new Uint8Array(data) : data;
+    
+    // Use CompressionStream API (modern browsers)
+    const cs = new CompressionStream('gzip');
+    const writer = cs.writable.getWriter();
+    writer.write(uint8Data);
+    writer.close();
+    
+    // Read compressed data
+    const chunks = [];
+    const reader = cs.readable.getReader();
+    let totalSize = 0;
+    
+    while (true) {
+      const { done, value } = await reader.read();
+      if (done) break;
+      chunks.push(value);
+      totalSize += value.length;
+    }
+    
+    // Combine chunks into single Uint8Array
+    const compressed = new Uint8Array(totalSize);
+    let offset = 0;
+    for (const chunk of chunks) {
+      compressed.set(chunk, offset);
+      offset += chunk.length;
+    }
+    
+    return compressed;
+  }
+
+  // Decompress gzip data
+  async decompressData(compressedData) {
+    const uint8Data = compressedData instanceof ArrayBuffer ? new Uint8Array(compressedData) : compressedData;
+    
+    // Use DecompressionStream API
+    const ds = new DecompressionStream('gzip');
+    const writer = ds.writable.getWriter();
+    writer.write(uint8Data);
+    writer.close();
+    
+    // Read decompressed data
+    const chunks = [];
+    const reader = ds.readable.getReader();
+    let totalSize = 0;
+    
+    while (true) {
+      const { done, value } = await reader.read();
+      if (done) break;
+      chunks.push(value);
+      totalSize += value.length;
+    }
+    
+    // Combine chunks
+    const decompressed = new Uint8Array(totalSize);
+    let offset = 0;
+    for (const chunk of chunks) {
+      decompressed.set(chunk, offset);
+      offset += chunk.length;
+    }
+    
+    return decompressed;
+  }
+
   // Import key from hex string
   async importKeyFromHex(hexKey) {
     const keyData = new Uint8Array(
@@ -23,6 +90,7 @@ class CryptoWorker {
   }
 
   // Decrypt file with chunked processing and progress updates
+  // Now includes decompression after decryption to restore original file
   async decryptFileChunked(encryptedData, key, progressCallback) {
     const iv = encryptedData.slice(0, 12); // First 12 bytes are IV
     const ciphertext = encryptedData.slice(12); // Rest is encrypted data
@@ -37,8 +105,12 @@ class CryptoWorker {
         key,
         ciphertext
       );
+      progressCallback(70); // Decryption done
+      
+      // Decompress the decrypted data
+      const decompressed = await this.decompressData(decrypted);
       progressCallback(100);
-      return decrypted;
+      return decompressed;
     }
 
     // For large files, we need to decrypt in one operation since AES-GCM
@@ -57,15 +129,29 @@ class CryptoWorker {
       ciphertext
     );
     
+    progressCallback(70); // Decryption done
+    
+    // Decompress the decrypted data
+    const decompressed = await this.decompressData(decrypted);
+    
     progressCallback(100);
-    return decrypted;
+    return decompressed;
   }
 
   // Encrypt file with chunked processing and progress updates
+  // Now includes compression before encryption for storage savings
   async encryptFileChunked(fileBuffer, key, progressCallback) {
     const iv = crypto.getRandomValues(new Uint8Array(12));
     
     progressCallback(5); // IV generation
+    
+    // Compress before encryption (saves storage, works well with unencrypted data)
+    const originalSize = fileBuffer.byteLength;
+    const compressed = await this.compressData(fileBuffer);
+    const compressionRatio = ((1 - compressed.length / originalSize) * 100).toFixed(1);
+    console.log(`Compression: ${originalSize} -> ${compressed.length} bytes (${compressionRatio}% savings)`);
+    
+    progressCallback(30); // Compression done
     
     const encrypted = await crypto.subtle.encrypt(
       {
@@ -73,7 +159,7 @@ class CryptoWorker {
         iv: iv,
       },
       key,
-      fileBuffer
+      compressed
     );
 
     progressCallback(90);
@@ -84,7 +170,7 @@ class CryptoWorker {
     combined.set(new Uint8Array(encrypted), iv.length);
     
     progressCallback(100);
-    return combined;
+    return { data: combined, originalSize: originalSize, compressedSize: compressed.length };
   }
 
   // Download file with progress tracking
@@ -184,11 +270,17 @@ self.onmessage = async function(e) {
         };
 
         const encKey = await cryptoWorker.importKeyFromHex(encKeyHex);
-        const encryptedData = await cryptoWorker.encryptFileChunked(fileBuffer, encKey, progressCallbackEnc);
+        const encryptResult = await cryptoWorker.encryptFileChunked(fileBuffer, encKey, progressCallbackEnc);
 
-        // encryptedData is a Uint8Array — send its underlying buffer as transferable
-        const outEncBuffer = encryptedData instanceof ArrayBuffer ? encryptedData : encryptedData.buffer;
-        self.postMessage({ id, type: 'success', data: outEncBuffer }, [outEncBuffer]);
+        // encryptResult now contains { data, originalSize, compressedSize }
+        const outEncBuffer = encryptResult.data instanceof ArrayBuffer ? encryptResult.data : encryptResult.data.buffer;
+        self.postMessage({ 
+          id, 
+          type: 'success', 
+          data: outEncBuffer,
+          originalSize: encryptResult.originalSize,
+          compressedSize: encryptResult.compressedSize
+        }, [outEncBuffer]);
         break;
 
       default:

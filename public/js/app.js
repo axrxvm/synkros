@@ -22,6 +22,7 @@ const goBackBtn = document.getElementById("goBackBtn");
 const toast = document.querySelector(".toast");
 
 const cleanupBtn = document.querySelector("#cleanup-btn");
+const logoBtn = document.getElementById("logoBtn");
 
 let uploadStartTime; // To store the time when upload starts
 const uploadSpeedEl = document.getElementById("uploadSpeed"); // Assuming ID for speed element
@@ -110,7 +111,7 @@ const uploadFile = async () => {
     
     statusText.textContent = "Encrypting file...";
     
-    const encryptedBlob = await window.e2eeCrypto.encryptFileWithProgress(
+    const encryptionResult = await window.e2eeCrypto.encryptFileWithProgress(
       file, 
       keyHex,
       (progress) => {
@@ -121,12 +122,26 @@ const uploadFile = async () => {
       }
     );
     
+    // Log compression savings if available
+    if (encryptionResult.compressedSize && encryptionResult.originalSize) {
+      const compressionRatio = ((1 - encryptionResult.compressedSize / encryptionResult.originalSize) * 100).toFixed(1);
+      console.log(`Compression saved ${compressionRatio}% storage space`);
+    }
+    
     // Update status for upload phase
     statusText.textContent = "Starting upload...";
     
     const formData = new FormData();
-    formData.append("myFile", encryptedBlob, file.name + '.encrypted');
+    formData.append("myFile", encryptionResult.blob, file.name + '.encrypted');
     formData.append("originalName", file.name);
+    
+    // Include compression metadata if available
+    if (encryptionResult.originalSize) {
+      formData.append("originalSize", encryptionResult.originalSize);
+    }
+    if (encryptionResult.compressedSize) {
+      formData.append("compressedSize", encryptionResult.compressedSize);
+    }
 
     const xhr = new XMLHttpRequest();
 
@@ -370,3 +385,26 @@ const showToast = (msg) => {
 goBackBtn.addEventListener("click", (e) => {
   window.location.href = "/";
 });
+
+// Copy Ray ID when clicking Synkros logo
+if (logoBtn) {
+  logoBtn.addEventListener("click", async (e) => {
+    e.preventDefault();
+    const rayId = document.body.getAttribute("data-ray-id");
+    if (rayId) {
+      try {
+        await navigator.clipboard.writeText(rayId);
+        showToast("Ray ID copied to clipboard");
+      } catch (err) {
+        // Fallback for older browsers
+        const tempInput = document.createElement("input");
+        tempInput.value = rayId;
+        document.body.appendChild(tempInput);
+        tempInput.select();
+        document.execCommand("copy");
+        document.body.removeChild(tempInput);
+        showToast("Ray ID copied to clipboard");
+      }
+    }
+  });
+}
